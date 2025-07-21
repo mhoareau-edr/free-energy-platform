@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String @unique
+  displayName String?
+  email    String
+  password String
+  role     String
+  SentMessages     Message[] @relation("SentMessages")
+  ReceivedMessages Message[] @relation("ReceivedMessages")
+}
+
+model History {
+  id       Int      @id @default(autoincrement())
+  user     String
+  action   String
+  date     DateTime @default(now())
+  visite   Visite?  @relation(fields: [visiteId], references: [id])
+  visiteId Int?
+  icon      String?
+  color     String?
+}
+
+model Visite {
+  id                Int       @id @default(autoincrement())
+  adresse_pose      String?
+  code_postal       String?
+  Commune           String?
+  pdfPath           String?
+  client            String?
+  demandeur         String?
+  nom_interlocuteur String?
+  fonction_interlocuteur String?
+  mail_interlocuteur String?
+  tel_interlocuteur String?
+  puissance_souhaitee String?
+  Date2             String?
+  Commentaire2      String?
+  photos            String[]  @default([])
+  etape             String?
+  commercial_vt        String?
+  stockage_text        String?
+  oui_revente          Boolean?
+  non_revente          Boolean?
+  oui_maintenance      Boolean?
+  non_maintenance      Boolean?
+  type_abonnement           Boolean?
+  type_comptant             Boolean?
+  prise_securisee           String?
+  commentaires_inclinaison  String?
+  commentaires_orientation  String?
+  commentaires_latitude     String?
+  commentaires_longitude    String?
+  commentaires_connexion_internet String?
+
+
+  createdAt DateTime @default(now())
+
+  locked Boolean @default(false)
+  technicien_vt     String?
+  date_vt           String?
+
+  history           History[]
+  permis_de_construire String?
+
+  data_pdf Json?
+
+  documents Document[]
+
+  date_debut_pose DateTime?
+  date_fin_pose   DateTime?
+
+  date_raccordement DateTime?
+
+  client_b2b Boolean? @default(false)
+  client_b2c Boolean? @default(false)
+  techniciens_recommandes Int?
+
+
+}
+
+model Document {
+  id        Int     @id @default(autoincrement())
+  nom       String
+  chemin    String
+  type      String
+  path      String
+  visite    Visite   @relation(fields: [visiteId], references: [id], onDelete: Cascade)
+  visiteId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
+  @@unique([visiteId, nom])
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  senderId   Int
+  receiverId Int
+  content    String
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  readAt     DateTime?
+
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  message   String
+  type      String
+  target    String
+  seen      Boolean  @default(false)
+  timestamp DateTime @default(now())
+}
