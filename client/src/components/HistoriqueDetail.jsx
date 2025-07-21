@@ -13,7 +13,7 @@ import {
   FaWrench
 } from "react-icons/fa";
 
-const API_URL = "http://10.10.2.106:5000";
+const API = import.meta.env.VITE_API_URL;
 
 const iconMap = {
   FaTimesCircle: <FaTimesCircle className="text-red-500" />,
@@ -31,7 +31,7 @@ export default function HistoriqueDetail({ onClose, user }) {
   const itemsPerPage = 10;
 
   const fetchHistory = async () => {
-    const res = await fetch(`${API_URL}/history`);
+    const res = await fetch(`${API}/history`);
     const data = await res.json();
     const sorted = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
     setHistory(sorted);

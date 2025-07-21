@@ -21,12 +21,13 @@ export default function ChatFullScreen({ user, onClose, forcedUserId, isMini = f
     const [receiver, setReceiver] = useState(null);
     const { id } = useParams();
     const selectedUserRef = useRef(null);
+    const API = import.meta.env.VITE_API_URL;
 
     const fetchMessages = async () => {
         if (!selectedUser || !user?.id) return;
 
         try {
-            const res = await axios.get(`http://10.10.2.106:5000/chat/messages`, {
+            const res = await axios.get(`${API}/chat/messages`, {
                 params: {
                     senderId: user.id,
                     receiverId: selectedUser.id,
@@ -65,7 +66,7 @@ export default function ChatFullScreen({ user, onClose, forcedUserId, isMini = f
             if (!user?.id) return;
 
             try {
-                const res = await axios.get(`http://10.10.2.106:5000/chat/conversations/${user.id}`);
+                const res = await axios.get(`${API}/chat/conversations/${user.id}`);
                 setConversations(res.data);
             } catch (err) {
                 console.error("Erreur chargement conversations :", err);
@@ -81,7 +82,7 @@ export default function ChatFullScreen({ user, onClose, forcedUserId, isMini = f
             if (!user?.id) return;
 
             try {
-                const res = await axios.get(`http://10.10.2.106:5000/users`);
+                const res = await axios.get(`${API}/users`);
                 setUsers(res.data.filter((u) => u.id !== user.id));
             } catch (err) {
                 console.error("Erreur chargement utilisateurs :", err);
@@ -105,7 +106,7 @@ export default function ChatFullScreen({ user, onClose, forcedUserId, isMini = f
 
         const markMessagesAsRead = async () => {
             try {
-                await axios.post("http://10.10.2.106:5000/chat/read", {
+                await axios.post(`${API}/chat/read`, {
                     senderId: selectedUser.id,
                     receiverId: user.id
                 });
@@ -124,7 +125,7 @@ export default function ChatFullScreen({ user, onClose, forcedUserId, isMini = f
 
     useEffect(() => {
         if (forcedUserId) {
-            fetch(`http://10.10.2.106:5000/users/${forcedUserId}`)
+            fetch(`${API}/users/${forcedUserId}`)
                 .then(res => res.json())
                 .then(user => {
                     setSelectedUser({
@@ -148,7 +149,7 @@ export default function ChatFullScreen({ user, onClose, forcedUserId, isMini = f
         };
 
         try {
-            const res = await axios.post("http://10.10.2.106:5000/chat/messages", msg);
+            const res = await axios.post(`${API}/chat/messages`, msg);
             socket.emit("sendMessage", res.data);
             setNewMessage("");
         } catch (err) {
@@ -160,7 +161,7 @@ export default function ChatFullScreen({ user, onClose, forcedUserId, isMini = f
 
 
         try {
-            await axios.delete(`http://10.10.2.106:5000/chat/messages/${messageId}`);
+            await axios.delete(`${API}/chat/messages/${messageId}`);
             setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
             toast.success("Message supprimé");
         } catch (err) {

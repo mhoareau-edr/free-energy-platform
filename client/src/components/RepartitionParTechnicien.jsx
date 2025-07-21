@@ -5,12 +5,13 @@ export default function RepartitionParTechnicien({ onSelectTechnicien }) {
   const [stats, setStats] = useState({});
   const [total, setTotal] = useState(0);
   const [nameToDisplayMap, setNameToDisplayMap] = useState({});
+  const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchData = async () => {
       const [visitesRes, usersRes] = await Promise.all([
-        axios.get("http://10.10.2.106:5000/visites"),
-        axios.get("http://10.10.2.106:5000/users"),
+        axios.get(`${API}/visites`),
+        axios.get(`${API}/users`),
       ]);
 
       const visites = visitesRes.data;

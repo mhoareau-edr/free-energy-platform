@@ -12,11 +12,12 @@ export default function PlanningPose({ user, onClose }) {
   const [planifications, setPlanifications] = useState([]);
   const [view, setView] = useState(Views.MONTH);
   const [date, setDate] = useState(new Date());
+  const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchPlanifications = async () => {
       try {
-        const response = await axios.get("http://10.10.2.106:5000/visites/planifiees");
+        const response = await axios.get(`${API}/visites/planifiees`);
 
         const mapped = [];
 

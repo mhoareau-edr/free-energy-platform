@@ -26,8 +26,6 @@ import { socket } from "../socket";
 import RepartitionParTechnicien from "../components/RepartitionParTechnicien";
 import ChatWidget from "@/components/Chat/ChatWidget";
 
-const API_URL = "http://10.10.2.106:5000";
-
 export default function DashboardTechnique({ user, onLogout }) {
   const [visites, setVisites] = useState([]);
   const [showSettingsPopup, setShowSettingsPopup] = useState(false);
@@ -51,15 +49,17 @@ export default function DashboardTechnique({ user, onLogout }) {
   const [showFullChat, setShowFullChat] = useState(false);
   const [selectedMiniChatUser, setSelectedMiniChatUser] = useState(null);
 
+  const API = import.meta.env.VITE_API_URL;
+
   const fetchVisites = async () => {
-    const res = await fetch(`${API_URL}/visites`);
+    const res = await fetch(`${API}/visites`);
     const data = await res.json();
     const sortedData = [...data].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     setVisites(sortedData);
   };
 
   const fetchActivities = async () => {
-    const res = await fetch(`${API_URL}/history`);
+    const res = await fetch(`${API}/history`);
     const data = await res.json();
     const sortedActivities = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
     setActivities(sortedActivities);
@@ -99,7 +99,7 @@ export default function DashboardTechnique({ user, onLogout }) {
 
   const handleSelectClient = async (v) => {
     if (v.etape === "Demande de VT") {
-      await fetch(`http://10.10.2.106:5000/visites/${v.id}/etape`, {
+      await fetch(`${API}/visites/${v.id}/etape`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ etape: "Visite Technique", user: user.name })
@@ -113,7 +113,7 @@ export default function DashboardTechnique({ user, onLogout }) {
   };
 
   const refreshVisites = async () => {
-    const res = await fetch("http://10.10.2.106:5000/visites");
+    const res = await fetch(`${API}/visites`);
     const data = await res.json();
     setVisites(data);
   };

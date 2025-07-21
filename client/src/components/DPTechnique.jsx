@@ -15,6 +15,8 @@ export default function DPTechnique({ visite, onSaved, user }) {
     plans: []
   });
 
+  const API = import.meta.env.VITE_API_URL;
+
   const handleCheckbox = (name, value) => {
     const list = formData[name];
     setFormData({
@@ -51,7 +53,7 @@ export default function DPTechnique({ visite, onSaved, user }) {
         ...Object.fromEntries(formData.plans.map(key => [key, true]))
       };
 
-      const oldRes = await fetch(`http://10.10.2.106:5000/visites/${visite.id}`);
+      const oldRes = await fetch(`${API}/visites/${visite.id}`);
       const oldData = await oldRes.json();
       const merged = {
         ...((oldData?.data_pdf && typeof oldData.data_pdf === "object") ? oldData.data_pdf : {}),
@@ -67,7 +69,7 @@ export default function DPTechnique({ visite, onSaved, user }) {
         formPayload.append("file", formData.permis_de_construire);
       }
 
-      const res = await fetch("http://10.10.2.106:5000/generate-pdf", {
+      const res = await fetch(`${API}/generate-pdf`, {
         method: "POST",
         body: formPayload
       });
@@ -77,27 +79,27 @@ export default function DPTechnique({ visite, onSaved, user }) {
       pdfPath = result.pdfPath;
       permisPath = result.permisPath;
 
-      await fetch(`http://10.10.2.106:5000/visites/${visite.id}/pdf`, {
+      await fetch(`${API}/visites/${visite.id}/pdf`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pdfPath, user: user.name })
       });
 
       if (permisPath) {
-        await fetch(`http://10.10.2.106:5000/visites/${visite.id}/permis`, {
+        await fetch(`${API}/visites/${visite.id}/permis`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ permisPath, user: user.name })
         });
       }
 
-      await fetch(`http://10.10.2.106:5000/visites/${visite.id}/data-pdf`, {
+      await fetch(`${API}/visites/${visite.id}/data-pdf`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user: user.name, data_pdf: merged })
       });
 
-      await fetch("http://10.10.2.106:5000/history", {
+      await fetch(`${API}/history`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -108,7 +110,7 @@ export default function DPTechnique({ visite, onSaved, user }) {
         })
       });
 
-      await fetch(`http://10.10.2.106:5000/visites/${visite.id}/etape`, {
+      await fetch(`${API}/visites/${visite.id}/etape`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ etape: "Demande de DP", user: user.name })

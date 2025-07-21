@@ -28,6 +28,8 @@ export default function FormulaireTechnique({ visite, onSaved, user }) {
     prise_securisee_text: ""
   });
 
+  const API = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
   if (visite?.data_pdf) {
     setFormData((prev) => ({
@@ -128,7 +130,7 @@ export default function FormulaireTechnique({ visite, onSaved, user }) {
   const handleSaveDraft = async () => {
   try {
 
-    const res = await fetch(`http://10.10.2.106:5000/visites/${visite.id}/data-pdf`, {
+    const res = await fetch(`${API}/visites/${visite.id}/data-pdf`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -139,7 +141,7 @@ export default function FormulaireTechnique({ visite, onSaved, user }) {
 
     if (!res.ok) throw new Error("Erreur lors de la sauvegarde du brouillon");
 
-    const resEtape = await fetch(`http://10.10.2.106:5000/visites/${visite.id}/etape`, {
+    const resEtape = await fetch(`${API}/visites/${visite.id}/etape`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -162,7 +164,7 @@ export default function FormulaireTechnique({ visite, onSaved, user }) {
 
   const handleSubmit = async () => {
     try {
-      const resTech = await fetch(`http://10.10.2.106:5000/visites/${visite.id}/tech`, {
+      const resTech = await fetch(`${API}/visites/${visite.id}/tech`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -185,7 +187,7 @@ export default function FormulaireTechnique({ visite, onSaved, user }) {
       payload.outputPath = `uploads/visite-${visite.id}/1. Pièces Administratives/Fiche_Visite_Technique.pdf`;
       console.log("📦 Payload envoyé au backend :", payload);
 
-      const resPdf = await fetch(`http://10.10.2.106:5000/generate-pdf`, {
+      const resPdf = await fetch(`${API}/generate-pdf`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -194,19 +196,19 @@ export default function FormulaireTechnique({ visite, onSaved, user }) {
       if (!resPdf.ok) throw new Error("Erreur génération PDF");
       const { pdfPath } = await resPdf.json();
 
-      await fetch(`http://10.10.2.106:5000/visites/${visite.id}/pdf`, {
+      await fetch(`${API}/visites/${visite.id}/pdf`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pdfPath, user: user?.name || "technicien" })
       });
 
-      await fetch(`http://10.10.2.106:5000/visites/${visite.id}/data-pdf`, {
+      await fetch(`${API}/visites/${visite.id}/data-pdf`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user: user.name, data_pdf: payload })
       });
 
-      await fetch(`http://10.10.2.106:5000/visites/${visite.id}/etape`, {
+      await fetch(`${API}/visites/${visite.id}/etape`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ etape: "DP", user: user.name })
@@ -215,7 +217,7 @@ export default function FormulaireTechnique({ visite, onSaved, user }) {
       toast.success("Visite Technique envoyée !");
       if (onSaved) onSaved();
 
-      await fetch("http://10.10.2.106:5000/notifications", {
+      await fetch(`${API}/notifications`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -235,7 +237,7 @@ export default function FormulaireTechnique({ visite, onSaved, user }) {
 
   const saveAndNextSection = async () => {
   try {
-    await fetch(`http://10.10.2.106:5000/visites/${visite.id}/brouillon-tech`, {
+    await fetch(`${API}/visites/${visite.id}/brouillon-tech`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ data: formData, user: user.name }),
@@ -293,7 +295,7 @@ export default function FormulaireTechnique({ visite, onSaved, user }) {
       <div className="flex justify-between items-center mb-4">
         <h2>Formulaire Visite Technique</h2>
         <a
-          href={`http://10.10.2.106:5000/${visite.pdfPath}`}
+          href={`${API}/${visite.pdfPath}`}
           target="_blank"
           rel="noopener noreferrer"
           className="pdf-button"

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-const API_URL = "http://10.10.2.106:5000";
+const API = import.meta.env.VITE_API_URL;
 
 export default function DPAdministrative({ visite, user, onUpdated }) {
   const [numeroDP, setNumeroDP] = useState("");
@@ -16,7 +16,7 @@ export default function DPAdministrative({ visite, user, onUpdated }) {
     formData.append("file", recipisseFile);
     formData.append("path", "2. Déclaration admin/1. Mairie");
 
-    const res = await fetch(`${API_URL}/visites/${visite.id}/documents`, {
+    const res = await fetch(`${API}/visites/${visite.id}/documents`, {
       method: "POST",
       body: formData
     });
@@ -40,14 +40,14 @@ export default function DPAdministrative({ visite, user, onUpdated }) {
       const success = await handleRecipisseUpload();
       if (!success) return;
 
-      await fetch(`${API_URL}/visites/${visite.id}/etape`, {
+      await fetch(`${API}/visites/${visite.id}/etape`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ etape: "RAC", user: user.name })
       });
 
       toast.success("DP validée");
-      await fetch("http://10.10.2.106:5000/notifications", {
+      await fetch(`${API}/notifications`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -70,7 +70,7 @@ export default function DPAdministrative({ visite, user, onUpdated }) {
 
     try {
 
-      const resUser = await fetch(`${API_URL}/users/by-name?name=${encodeURIComponent(visite.technicien_vt)}`);
+      const resUser = await fetch(`${API}/users/by-name?name=${encodeURIComponent(visite.technicien_vt)}`);
       const userData = await resUser.json();
 
       if (!resUser.ok || !userData?.id) {
@@ -80,7 +80,7 @@ export default function DPAdministrative({ visite, user, onUpdated }) {
 
       const content = `Documents manquants pour la DP de ${visite.nom_interlocuteur} :\n${documentsManquants}`;
 
-      const resMessage = await fetch(`${API_URL}/chat/messages`, {
+      const resMessage = await fetch(`${API}/chat/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -96,7 +96,7 @@ export default function DPAdministrative({ visite, user, onUpdated }) {
       }
 
       // 3. Mettre à jour l'étape
-      await fetch(`${API_URL}/visites/${visite.id}/etape`, {
+      await fetch(`${API}/visites/${visite.id}/etape`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ etape: "En attente de documents pour la DP", user: user.name }),
@@ -111,7 +111,7 @@ export default function DPAdministrative({ visite, user, onUpdated }) {
   };
 
   const handleRecommencer = async () => {
-    await fetch(`${API_URL}/visites/${visite.id}/etape`, {
+    await fetch(`${API}/visites/${visite.id}/etape`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ etape: "Demande de DP", user: user.name })
@@ -123,7 +123,7 @@ export default function DPAdministrative({ visite, user, onUpdated }) {
   const handleAnnuler = async () => {
     const confirm = window.confirm("Confirmer l'annulation définitive de la DP ?");
     if (!confirm) return;
-    await fetch(`${API_URL}/visites/${visite.id}/etape`, {
+    await fetch(`${API}/visites/${visite.id}/etape`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ etape: "Annulée", user: user.name })

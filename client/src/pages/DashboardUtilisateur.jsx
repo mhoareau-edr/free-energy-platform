@@ -37,7 +37,7 @@ const iconMap = {
 
 const defaultColor = "bg-gray-400";
 
-const API_URL = "http://10.10.2.106:5000";
+const API = import.meta.env.VITE_API_URL;
 
 export default function DashboardUtilisateur({ user, onLogout }) {
 
@@ -82,7 +82,7 @@ export default function DashboardUtilisateur({ user, onLogout }) {
 
 
   const fetchVisites = async () => {
-    const res = await fetch(`${API_URL}/visites`);
+    const res = await fetch(`${API}/visites`);
     const data = await res.json();
     const sortedData = [...data].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     setVisites(sortedData);
@@ -92,7 +92,7 @@ export default function DashboardUtilisateur({ user, onLogout }) {
 
 
   const fetchActivities = async () => {
-    const res = await fetch(`${API_URL}/history`);
+    const res = await fetch(`${API}/history`);
     const data = await res.json();
     const sortedActivities = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
     setActivities(sortedActivities);
@@ -100,7 +100,7 @@ export default function DashboardUtilisateur({ user, onLogout }) {
 
   const handleSelectClient = async (v) => {
     if (v.etape === "Demande de VT") {
-      await fetch(`http://10.10.2.106:5000/visites/${v.id}/etape`, {
+      await fetch(`${API}/visites/${v.id}/etape`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ etape: "Visite Technique", user: user.name })
@@ -217,7 +217,7 @@ export default function DashboardUtilisateur({ user, onLogout }) {
     };
 
 
-    const pdfRes = await fetch(`${API_URL}/generate-pdf`, {
+    const pdfRes = await fetch(`${API}/generate-pdf`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
@@ -227,7 +227,7 @@ export default function DashboardUtilisateur({ user, onLogout }) {
       const { pdfPath, bonLivraisonPath, procesVerbalPath } = await pdfRes.json();
       toast.success("Visite Technique demandée !");
 
-      const res = await fetch(`${API_URL}/visites`, {
+      const res = await fetch(`${API}/visites`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -272,7 +272,7 @@ export default function DashboardUtilisateur({ user, onLogout }) {
           client_b2c: false
         });
 
-        await fetch("http://10.10.2.106:5000/notifications", {
+        await fetch("`${API}/notifications", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

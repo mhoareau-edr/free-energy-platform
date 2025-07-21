@@ -18,7 +18,8 @@ export default function CalendarPose({ visite, user }) {
 
   useEffect(() => {
     const fetchPlanifications = async () => {
-      const res = await axios.get("http://10.10.2.106:5000/visites/planifiees");
+      const API = import.meta.env.VITE_API_URL;
+      const res = await axios.get(`${API}/visites/planifiees`);
       const formattedEvents = res.data.map((p) => ({
         title: p.nom_interlocuteur,
         start: p.date_debut_pose,
@@ -61,10 +62,11 @@ export default function CalendarPose({ visite, user }) {
 
 
   const handleConfirm = async () => {
+    const API = import.meta.env.VITE_API_URL;
     const dateDebut = new Date(startDateTime);
     const dateFin = new Date(endDateTime);
 
-    await axios.put(`http://10.10.2.106:5000/visites/${visite.id}/planifier-pose`, {
+    await axios.put(`${API}/visites/${visite.id}/planifier-pose`, {
       date_debut_pose: dateDebut.toISOString(),
       date_fin_pose: dateFin.toISOString(),
       techniciens_recommandes: techniciens,

@@ -3,14 +3,14 @@ import { FaCalendarCheck } from "react-icons/fa";
 import { format } from "date-fns";
 import fr from "date-fns/locale/fr";
 
-const API_URL = "http://10.10.2.106:5000";
+const API = import.meta.env.VITE_API_URL;
 
 export default function RendezVousPlanifies({ onVoirTout }) {
   const [rdvs, setRdvs] = useState([]);
 
   useEffect(() => {
     const fetchRendezVous = async () => {
-      const res = await fetch(`${API_URL}/visites/planifiees`);
+      const res = await fetch(`${API}/visites/planifiees`);
       const data = await res.json();
 
       const upcoming = [...data]

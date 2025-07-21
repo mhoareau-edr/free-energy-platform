@@ -3,11 +3,12 @@ import axios from "axios";
 
 export default function ListePoses() {
   const [planifications, setPlanifications] = useState([]);
+  const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchPlanifications = async () => {
       try {
-        const res = await axios.get("http://10.10.2.106:5000/visites/planifiees");
+        const res = await axios.get(`${API}/visites/planifiees`);
         setPlanifications(res.data);
       } catch (err) {
         console.error("Erreur chargement poses :", err);

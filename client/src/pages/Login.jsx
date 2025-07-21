@@ -6,13 +6,13 @@ export default function Login({ onLoginSuccess }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const API_URL = "http://10.10.2.106:5000";
+  const API = import.meta.env.VITE_API_URL;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await fetch(`${API_URL}/users`);
+      const res = await fetch(`${API}/users`);
       const users = await res.json();
 
       const foundUser = users.find(

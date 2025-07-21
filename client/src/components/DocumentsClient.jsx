@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FaFolder, FaFileAlt, FaFilePdf, FaTrash, FaUpload, FaPlus } from "react-icons/fa";
 import toast from "react-hot-toast";
 
-const API_URL = "http://10.10.2.106:5000";
+const API = import.meta.env.VITE_API_URL;
 
 export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUpdateDocuments }) {
   const [path, setPath] = useState("/");
@@ -34,7 +34,7 @@ export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUp
 
     const fetchItems = async () => {
       try {
-        const res = await fetch(`${API_URL}/visites/${visiteId}/documents?path=${path}`);
+        const res = await fetch(`${API}/visites/${visiteId}/documents?path=${path}`);
         const data = await res.json();
         setItems(Array.isArray(data) ? data : []);
       } catch (err) {
@@ -67,7 +67,7 @@ export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUp
     const formData = new FormData();
     formData.append("file", file);
     formData.append("path", path);
-    const res = await fetch(`${API_URL}/visites/${visiteId}/documents`, {
+    const res = await fetch(`${API}/visites/${visiteId}/documents`, {
       method: "POST",
       body: formData
     });
@@ -88,7 +88,7 @@ export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUp
       return;
     }
 
-    const res = await fetch(`${API_URL}/visites/${visiteId}/documents/folder`, {
+    const res = await fetch(`${API}/visites/${visiteId}/documents/folder`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ path, name: newFolderName.trim() })
@@ -120,7 +120,7 @@ export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUp
     const confirmDelete = window.confirm("Supprimer ce fichier ?");
     if (!confirmDelete) return;
 
-    const res = await fetch(`${API_URL}/visites/${visiteId}/documents`, {
+    const res = await fetch(`${API}/visites/${visiteId}/documents`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ chemin: contextMenu.item.chemin })
@@ -145,7 +145,7 @@ export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUp
       goToFolder(item.nom);
     } else {
 
-      window.open(`${API_URL}/${item.chemin}`, "_blank");
+      window.open(`${API}/${item.chemin}`, "_blank");
     }
   };
 
@@ -155,7 +155,7 @@ export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUp
       return;
     }
 
-    const res = await fetch(`${API_URL}/visites/${visiteId}/documents/folder`, {
+    const res = await fetch(`${API}/visites/${visiteId}/documents/folder`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ path, name: newFolderName.trim() })
@@ -182,7 +182,7 @@ export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUp
     if (item.type === "folder") {
       goToFolder(item.nom);
     } else if (item.chemin) {
-      window.open(`${API_URL}/${item.chemin}`, "_blank");
+      window.open(`${API}/${item.chemin}`, "_blank");
 
     }
 
@@ -201,7 +201,7 @@ export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUp
     e.preventDefault();
     if (!draggedItem || target.type !== "folder") return;
 
-    const res = await fetch(`${API_URL}/visites/${visiteId}/documents/move`, {
+    const res = await fetch(`${API}/visites/${visiteId}/documents/move`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -225,7 +225,7 @@ export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUp
       return;
     }
 
-    const res = await fetch(`${API_URL}/visites/${visiteId}/documents/rename`, {
+    const res = await fetch(`${API}/visites/${visiteId}/documents/rename`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -311,7 +311,7 @@ export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUp
             const confirmDelete = window.confirm("Supprimer ce fichier ?");
             if (!confirmDelete) return;
 
-            const res = await fetch(`${API_URL}/visites/${visiteId}/documents`, {
+            const res = await fetch(`${API}/visites/${visiteId}/documents`, {
               method: "DELETE",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ chemin: selectedDoc.chemin })

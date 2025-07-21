@@ -24,9 +24,7 @@ import ChatFullScreen from "@/components/Chat/ChatFullScreen";
 import Header from "@/components/Header";
 import RepartitionParTechnicien from "../components/RepartitionParTechnicien";
 
-
-const API_URL = "http://10.10.2.106:5000";
-const socket = io(API_URL);
+const socket = io(API);
 
 export default function DashboardAdministratif({ user, onLogout }) {
   const [visites, setVisites] = useState([]);
@@ -44,6 +42,7 @@ export default function DashboardAdministratif({ user, onLogout }) {
   const [filtreEtapes, setFiltreEtapes] = useState([]);
   const [filtreTechnicien, setFiltreTechnicien] = useState(null);
   const searchRef = useRef(null);
+  const API = import.meta.env.VITE_API_URL;
 
   const [name, setName] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -52,13 +51,13 @@ export default function DashboardAdministratif({ user, onLogout }) {
   const [role, setRole] = useState("Administratif");
 
   const fetchVisites = async () => {
-    const res = await fetch(`${API_URL}/visites`);
+    const res = await fetch(`${API}/visites`);
     const data = await res.json();
     setVisites(data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
   };
 
   const fetchUsers = async () => {
-    const res = await fetch(`${API_URL}/users`);
+    const res = await fetch(`${API}/users`);
     const data = await res.json();
     setUsers(data);
   };
@@ -77,7 +76,7 @@ export default function DashboardAdministratif({ user, onLogout }) {
 
   const handleCreateUser = async () => {
     const newUser = { name, displayName, email, password, role };
-    const res = await fetch(`${API_URL}/users`, {
+    const res = await fetch(`${API}/users`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newUser),

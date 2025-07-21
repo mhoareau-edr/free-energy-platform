@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { FaClipboardList } from "react-icons/fa";
 
-const API_URL = "http://10.10.2.106:5000";
+const API = import.meta.env.VITE_API_URL;
 
 export default function Historique() {
   const [activities, setActivities] = useState([]);
 
   const fetchActivities = async () => {
-    const res = await fetch(`${API_URL}/history`);
+    const res = await fetch(`${API}/history`);
     const data = await res.json();
     const sorted = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
     setActivities(sorted);

@@ -17,6 +17,7 @@ export default function NotificationBell({ user }) {
   });
   const sonActifRef = useRef(sonActif);
   const [flashMessages, setFlashMessages] = useState([]);
+  const API = import.meta.env.VITE_API_URL;
 
   const toggleSon = () => {
     const newValue = !sonActif;
@@ -40,7 +41,7 @@ export default function NotificationBell({ user }) {
 
     socket.emit("joinRoom", { userId: user.id });
 
-    fetch(`http://10.10.2.106:5000/notifications?target=${user.role}`)
+    fetch(`${API}/notifications?target=${user.role}`)
       .then(res => res.json())
       .then(setNotifications)
       .catch(err => console.error("Erreur chargement notifs", err));
@@ -79,7 +80,7 @@ export default function NotificationBell({ user }) {
 
   const handleDelete = async (id) => {
     try {
-      const res = await fetch(`http://10.10.2.106:5000/notifications/${id}`, {
+      const res = await fetch(`${API}/notifications/${id}`, {
         method: "DELETE",
       });
 
@@ -98,12 +99,12 @@ export default function NotificationBell({ user }) {
   }, []);
 
   useEffect(() => {
-    fetch(`http://10.10.2.106:5000/notifications?target=${user.id}`)
+    fetch(`${API}/notifications?target=${user.id}`)
       .then(res => res.json())
       .then(setNotifications)
       .catch(err => console.error("Erreur chargement notifs", err));
 
-    const socket = io("http://10.10.2.106:5000");
+    const socket = io(`${API}`);
     socket.on("new_notification", (notif) => {
       if (notif.target === user.id.toString()) {
         setNotifications(prev => [notif, ...prev]);
@@ -115,7 +116,7 @@ export default function NotificationBell({ user }) {
 
   const markAsRead = async (notif) => {
 
-    const res = await fetch(`http://10.10.2.106:5000/notifications/${notif.id}/read`, {
+    const res = await fetch(`${API}/notifications/${notif.id}/read`, {
       method: "PUT",
     });
 

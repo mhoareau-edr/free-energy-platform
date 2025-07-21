@@ -14,8 +14,6 @@ import UploaderPhotosPose from "./UploaderPhotosPose";
 import moment from "moment";
 import confetti from "canvas-confetti";
 
-const API_URL = "http://10.10.2.106:5000";
-
 export default function ClientDetail({ visite, onClose, user, refreshVisites, refreshActivities }) {
   const [activeTab, setActiveTab] = useState("suivi");
   const [pdfTimestamp] = useState(Date.now());
@@ -35,6 +33,8 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
   const end = moment(visite.date_fin_pose);
   const duration = moment.duration(end.diff(start));
 
+  const API = import.meta.env.VITE_API_URL;
+
   const months = Math.floor(duration.asMonths());
   const days = duration.subtract(months, 'months').days();
 
@@ -44,7 +44,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
     const confirmDelete = window.confirm("Voulez-vous vraiment supprimer ce client ?");
     if (!confirmDelete) return;
 
-    const res = await fetch(`${API_URL}/visites/${visite.id}`, {
+    const res = await fetch(`${API}/visites/${visite.id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json"
@@ -65,21 +65,21 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
   };
 
   const refreshClient = async () => {
-    const res = await fetch(`${API_URL}/visites/${visite.id}`);
+    const res = await fetch(`${API}/visites/${visite.id}`);
     const updated = await res.json();
     Object.assign(visite, updated);
   };
 
   useEffect(() => {
     const fetchMainPDF = async () => {
-      const res = await fetch(`${API_URL}/visites/${visite.id}/documents?path=/1. Pièces Administratives`);
+      const res = await fetch(`${API}/visites/${visite.id}/documents?path=/1. Pièces Administratives`);
       const docs = await res.json();
       const fichePDF = docs.find(d =>
         d.nom === "Fiche Visite Technique" || d.nom === "Fiche_Visite_Technique.pdf"
       );
 
       if (fichePDF) {
-        setFichePDFUrl(`http://10.10.2.106:5000/${fichePDF.chemin}`);
+        setFichePDFUrl(`${API}/${fichePDF.chemin}`);
       }
     };
 
@@ -161,7 +161,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
 
           <div className="mt-6 space-y-2">
             <a
-              href={`http://10.10.2.106:5000/${visite.pdfPath}`}
+              href={`${API}${visite.pdfPath}`}
               target="_blank"
               rel="noopener noreferrer"
               className="block text-center bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded"
@@ -174,7 +174,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                 <button
                   className={`w-full font-semibold py-2 rounded ${locked ? "bg-red-500 text-white" : "bg-blue-500 text-white"}`}
                   onClick={async () => {
-                    const res = await fetch(`${API_URL}/visites/${visite.id}/lock`, {
+                    const res = await fetch(`${API}/visites/${visite.id}/lock`, {
                       method: "PUT",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({ locked: !locked })
@@ -193,7 +193,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                 <button
                   className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded"
                   onClick={async () => {
-                    const res = await fetch(`${API_URL}/users`);
+                    const res = await fetch(`${API}/users`);
                     const data = await res.json();
                     setAvailableUsers(data.filter(u => u.role === "Technique" && u.name !== user.name));
                     setShowTransferModal(true);
@@ -320,7 +320,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
 
                             const zip = new JSZip();
 
-                            const allItems = await fetch(`http://10.10.2.106:5000/visites/${visite.id}/documents/full-tree`)
+                            const allItems = await fetch(`${API}/visites/${visite.id}/documents/full-tree`)
                               .then(res => res.json());
 
                             await Promise.all(
@@ -331,7 +331,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                                   zip.folder(pathInZip); // crée le dossier même vide
                                 } else {
                                   try {
-                                    const url = `http://10.10.2.106:5000/uploads/visite-${visite.id}/${item.relativePath}`;
+                                    const url = `${API}/uploads/visite-${visite.id}/${item.relativePath}`;
                                     const response = await fetch(url);
                                     if (!response.ok) return;
                                     const blob = await response.blob();
@@ -363,7 +363,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                             <p><strong>✉️ Email :</strong> {visite.mail_interlocuteur || "—"}</p>
                             <p><strong>💡 Type :</strong> {visite.client_b2b ? "BtoB" : visite.client_b2c ? "BtoC" : "Non précisé"}</p>
                             <a
-                              href={`http://10.10.2.106:5000/${visite.pdfPath}`}
+                              href={`${API}/${visite.pdfPath}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="block w-full text-center bg-red-600 hover:bg-red-700 text-white py-2 rounded font-semibold"
@@ -402,7 +402,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                                   {visite.photos.slice(0, 6).map((photo, index) => (
                                     <img
                                       key={index}
-                                      src={`http://10.10.2.106:5000/${photo}`}
+                                      src={`${API}/${photo}`}
                                       alt={`Photo ${index + 1}`}
                                       className="w-full h-full object-cover rounded shadow cursor-pointer hover:scale-105 transition-transform"
                                       onClick={() => setActiveTab("photos")}
@@ -487,7 +487,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                               const confirm = window.confirm("Confirmer le retour à l'étape 'En attente de documents pour la DP' ?");
                               if (!confirm) return;
 
-                              const res = await fetch(`${API_URL}/visites/${visite.id}/etape`, {
+                              const res = await fetch(`${API}/visites/${visite.id}/etape`, {
                                 method: "PUT",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({
@@ -544,13 +544,13 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                                 posePhotos.forEach(file => formData.append("photos", file));
                                 formData.append("user", user.name);
 
-                                await fetch(`${API_URL}/visites/${visite.id}/photos`, {
+                                await fetch(`${API}/visites/${visite.id}/photos`, {
                                   method: "POST",
                                   body: formData
                                 });
                               }
 
-                              await fetch(`${API_URL}/visites/${visite.id}/etape`, {
+                              await fetch(`${API}/visites/${visite.id}/etape`, {
                                 method: "PUT",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ etape: "Consuel", user: user.name }),
@@ -597,7 +597,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                                 formData.append("path", "2. Déclaration admin/3. Consuel");
 
                                 try {
-                                  const res = await fetch(`${API_URL}/visites/${visite.id}/documents`, {
+                                  const res = await fetch(`${API}/visites/${visite.id}/documents`, {
                                     method: "POST",
                                     body: formData
                                   });
@@ -624,7 +624,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                                 const confirm = window.confirm("Passer à l'étape suivante ?");
                                 if (!confirm) return;
 
-                                await fetch(`${API_URL}/visites/${visite.id}/etape`, {
+                                await fetch(`${API}/visites/${visite.id}/etape`, {
                                   method: "PUT",
                                   headers: { "Content-Type": "application/json" },
                                   body: JSON.stringify({ etape: "EDF", user: user.name }),
@@ -658,7 +658,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                               const confirm = window.confirm("Valider la mise en service ?");
                               if (!confirm) return;
 
-                              await fetch(`${API_URL}/visites/${visite.id}/etape`, {
+                              await fetch(`${API}/visites/${visite.id}/etape`, {
                                 method: "PUT",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ etape: "Terminé", user: user.name }),
@@ -707,7 +707,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                                 formData.append("path", "2. Déclaration admin/3. Consuel");
 
                                 try {
-                                  const res = await fetch(`${API_URL}/visites/${visite.id}/documents`, {
+                                  const res = await fetch(`${API}/visites/${visite.id}/documents`, {
                                     method: "POST",
                                     body: formData
                                   });
@@ -734,7 +734,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                                 const confirm = window.confirm("Passer à l'étape suivante ?");
                                 if (!confirm) return;
 
-                                await fetch(`${API_URL}/visites/${visite.id}/etape`, {
+                                await fetch(`${API}/visites/${visite.id}/etape`, {
                                   method: "PUT",
                                   headers: { "Content-Type": "application/json" },
                                   body: JSON.stringify({ etape: "EDF", user: user.name }),
@@ -805,7 +805,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
 
                             const zip = new JSZip();
 
-                            const allItems = await fetch(`http://10.10.2.106:5000/visites/${visite.id}/documents/full-tree`)
+                            const allItems = await fetch(`${API}/visites/${visite.id}/documents/full-tree`)
                               .then(res => res.json());
 
                             await Promise.all(
@@ -816,7 +816,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                                   zip.folder(pathInZip); // crée le dossier même vide
                                 } else {
                                   try {
-                                    const url = `http://10.10.2.106:5000/uploads/visite-${visite.id}/${item.relativePath}`;
+                                    const url = `${API}/uploads/visite-${visite.id}/${item.relativePath}`;
                                     const response = await fetch(url);
                                     if (!response.ok) return;
                                     const blob = await response.blob();
@@ -848,7 +848,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                             <p><strong>✉️ Email :</strong> {visite.mail_interlocuteur || "—"}</p>
                             <p><strong>💡 Type :</strong> {visite.client_b2b ? "BtoB" : visite.client_b2c ? "BtoC" : "Non précisé"}</p>
                             <a
-                              href={`http://10.10.2.106:5000/${visite.pdfPath}`}
+                              href={`${API}/${visite.pdfPath}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="block w-full text-center bg-red-600 hover:bg-red-700 text-white py-2 rounded font-semibold"
@@ -887,7 +887,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                                   {visite.photos.slice(0, 6).map((photo, index) => (
                                     <img
                                       key={index}
-                                      src={`http://10.10.2.106:5000/${photo}`}
+                                      src={`${API}/${photo}`}
                                       alt={`Photo ${index + 1}`}
                                       className="w-full h-full object-cover rounded shadow cursor-pointer hover:scale-105 transition-transform"
                                       onClick={() => setActiveTab("photos")}
@@ -927,7 +927,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                               const confirm = window.confirm("Valider la mise en service ?");
                               if (!confirm) return;
 
-                              await fetch(`${API_URL}/visites/${visite.id}/etape`, {
+                              await fetch(`${API}/visites/${visite.id}/etape`, {
                                 method: "PUT",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ etape: "Terminé", user: user.name }),
@@ -1008,7 +1008,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                               const confirm = window.confirm("Confirmer le retour à l'étape 'En attente de documents pour la DP' ?");
                               if (!confirm) return;
 
-                              const res = await fetch(`${API_URL}/visites/${visite.id}/etape`, {
+                              const res = await fetch(`${API}/visites/${visite.id}/etape`, {
                                 method: "PUT",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({
@@ -1022,7 +1022,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                                 if (refreshVisites) refreshVisites();
                                 if (refreshActivities) refreshActivities();
                                 onClose();
-                                await fetch("http://10.10.2.106:5000/notifications", {
+                                await fetch(`${API}/notifications`, {
                                   method: "POST",
                                   headers: { "Content-Type": "application/json" },
                                   body: JSON.stringify({
@@ -1059,7 +1059,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                               const confirm = window.confirm("Valider la demande de raccordement ?");
                               if (!confirm) return;
 
-                              const res = await fetch(`${API_URL}/visites/${visite.id}/etape`, {
+                              const res = await fetch(`${API}/visites/${visite.id}/etape`, {
                                 method: "PUT",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({
@@ -1125,7 +1125,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
 
                           await Promise.all(
                             visite.photos.map(async (photo) => {
-                              const response = await fetch(`http://10.10.2.106:5000/${photo}`);
+                              const response = await fetch(`${API}/${photo}`);
                               const blob = await response.blob();
                               const filename = photo.split("/").pop();
                               zip.file(filename, blob);
@@ -1145,7 +1145,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                         <div key={index} className="w-40 h-40 border rounded overflow-hidden shadow">
                           <img
                             onClick={() => setSelectedPhoto(index)}
-                            src={`http://10.10.2.106:5000/${photo}`}
+                            src={`${API}/${photo}`}
                             alt={`Photo ${index + 1}`}
                             className="w-full h-full object-cover cursor-pointer"
                           />
@@ -1185,7 +1185,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                     <button
                       className="px-4 py-2 bg-primary text-white rounded"
                       onClick={async () => {
-                        const res = await fetch(`${API_URL}/visites/${visite.id}/transfer`, {
+                        const res = await fetch(`${API}/visites/${visite.id}/transfer`, {
                           method: "PUT",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({
@@ -1243,7 +1243,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                     </button>
 
                     <img
-                      src={`http://10.10.2.106:5000/${visite.photos[selectedPhoto]}`}
+                      src={`${API}/${visite.photos[selectedPhoto]}`}
                       alt="Aperçu"
                       className="max-w-[60vw] max-h-[60vh] rounded"
                     />
@@ -1251,7 +1251,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                     <button
                       onClick={() => {
                         const link = document.createElement('a');
-                        link.href = `http://10.10.2.106:5000/${visite.photos[selectedPhoto]}`;
+                        link.href = `${API}/${visite.photos[selectedPhoto]}`;
                         link.download = visite.photos[selectedPhoto].split("/").pop();
                         document.body.appendChild(link);
                         link.click();

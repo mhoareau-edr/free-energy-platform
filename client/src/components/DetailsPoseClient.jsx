@@ -4,11 +4,12 @@ import axios from "axios";
 export default function DetailsPoseClient({ visiteId }) {
   const [pose, setPose] = useState(null);
   const [loading, setLoading] = useState(true);
+  const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchPose = async () => {
       try {
-        const res = await axios.get(`http://10.10.2.106:5000/visites/${visiteId}`);
+        const res = await axios.get(`${API}/visites/${visiteId}`);
         setPose(res.data);
       } catch (err) {
         console.error("Erreur récupération détails de pose :", err);
@@ -23,7 +24,7 @@ export default function DetailsPoseClient({ visiteId }) {
   useEffect(() => {
   const fetchPose = async () => {
     try {
-      const res = await axios.get(`http://10.10.2.106:5000/visites/${visiteId}`);
+      const res = await axios.get(`${API}/visites/${visiteId}`);
       console.log("👉 Détails visite :", res.data); // <-- ici
       setPose(res.data);
     } catch (err) {

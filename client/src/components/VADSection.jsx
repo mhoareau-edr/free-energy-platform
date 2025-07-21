@@ -10,6 +10,7 @@ export default function VADSection({ visite, visiteId, onValidated }) {
   const [t0File, setT0File] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const API = import.meta.env.VITE_API_URL;
 
   const uploadFile = async (file, nomSansExtension, dossier) => {
     const extension = file.name.split('.').pop();
@@ -20,7 +21,7 @@ export default function VADSection({ visite, visiteId, onValidated }) {
     formData.append("path", dossier);
     formData.append("nom", nom);
 
-    return axios.post(`http://10.10.2.106:5000/visites/${visiteId}/documents`, formData, {
+    return axios.post(`${API}/visites/${visiteId}/documents`, formData, {
       headers: {
         "Content-Type": "multipart/form-data"
       }
@@ -36,12 +37,12 @@ export default function VADSection({ visite, visiteId, onValidated }) {
       await uploadFile(cnoFile, "CNO", "2. Déclaration admin");
       await uploadFile(t0File, "T0", "2. Déclaration admin");
 
-      await axios.put(`http://10.10.2.106:5000/visites/${visiteId}/etape`, {
+      await axios.put(`${API}/visites/${visiteId}/etape`, {
         etape: "Pose"
       });
 
       toast.success("Étape validée : Pose");
-      await fetch("http://10.10.2.106:5000/notifications", {
+      await fetch(`${API}/notifications`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -72,7 +73,7 @@ export default function VADSection({ visite, visiteId, onValidated }) {
             const confirm = window.confirm("Confirmer le retour à l'étape 'En attente de documents pour la DP' ?");
             if (!confirm) return;
 
-            const res = await fetch(`${API_URL}/visites/${visite.id}/etape`, {
+            const res = await fetch(`${API}/visites/${visite.id}/etape`, {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({

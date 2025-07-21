@@ -19,11 +19,11 @@ const iconMap = {
   FaWrench: <FaWrench className="text-orange-500" />
 };
 
-const API_URL = "http://10.10.2.106:5000";
-
 export default function RecentActivities({ user, onShowHistory }) {
   const [activities, setActivities] = useState([]);
   const STORAGE_KEY = `seenActivities_${user.name}`;
+
+  const API = import.meta.env.VITE_API_URL;
 
   const [seenActivities, setSeenActivities] = useState(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -32,7 +32,7 @@ export default function RecentActivities({ user, onShowHistory }) {
 
   useEffect(() => {
     const fetchActivities = async () => {
-      const res = await fetch(`${API_URL}/history`);
+      const res = await fetch(`${API}/history`);
       const data = await res.json();
       const sorted = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
       setActivities(sorted);
