@@ -30,7 +30,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const connectedUsers = new Map();
 
-app.listen(PORT, () => console.log("🚀 Serveur lancé sur le port", PORT));
+app.listen(PORT, () => {
+  console.log(`🚀 Serveur lancé sur le port ${PORT}`);
+});
 
 app.use(cors());
 app.use(express.json());
