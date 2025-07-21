@@ -1,0 +1,73 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 📦 Dépendances
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# 🛠️ Builds
+dist/
+client/dist/
+client/build/
+server/dist/
+.vite/
+
+# ⚙️ Environnements
+.env
+.env.local
+.env.*.local
+
+# ⚠️ Secrets / BDD
+*.sqlite
+*.sqlite-journal
+
+# 📂 Fichiers générés par ton app
+uploads/
+photos/
+temp/
+cache/
+*.log
+
+# 🖼️ MacOS / Windows fichiers système
+.DS_Store
+Thumbs.db
+
+# 🧪 Tests / Coverage
+coverage/
+*.test.js
+*.spec.js
+
+# 🔁 Prisma (optionnel si tu veux tout garder en local uniquement)
+prisma/migrations/
+
+# 🔧 VSCodium / VSCode / WebStorm etc.
+.vscode/
+.idea/
+
+# 🪄 Autres potentiels
+*.local
+*.bak
+*.swp
