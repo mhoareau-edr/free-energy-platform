@@ -23,6 +23,7 @@ import WelcomeBanner from "../components/WelcomeBanner";
 import ChatFullScreen from "@/components/Chat/ChatFullScreen";
 import Header from "@/components/Header";
 import RepartitionParTechnicien from "../components/RepartitionParTechnicien";
+const API = import.meta.env.VITE_API_URL;
 
 const socket = io(API);
 
@@ -42,7 +43,7 @@ export default function DashboardAdministratif({ user, onLogout }) {
   const [filtreEtapes, setFiltreEtapes] = useState([]);
   const [filtreTechnicien, setFiltreTechnicien] = useState(null);
   const searchRef = useRef(null);
-  const API = import.meta.env.VITE_API_URL;
+  
 
   const [name, setName] = useState("");
   const [displayName, setDisplayName] = useState("");
