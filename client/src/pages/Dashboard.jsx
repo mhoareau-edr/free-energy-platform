@@ -213,7 +213,7 @@ export default function DashboardAdministratif({ user, onLogout }) {
                   <RecentActivities user={user} onShowHistory={() => setShowHistoryDetail(true)} />
                 </div>
               </div>
-              <div className="bg-white p-6 rounded-xl shadow border">
+              <div className="bg-white p-6 rounded-xl shadow border dark:bg-[#1d2125]">
                 <h2 className="text-xl font-semibold mb-4">Liste des utilisateurs</h2>
                 {users.length === 0 ? (
                   <p className="text-gray-500">Aucun utilisateur.</p>
