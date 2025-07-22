@@ -25,6 +25,7 @@ import WelcomeBanner from "../components/WelcomeBanner";
 import { socket } from "../socket";
 import RepartitionParTechnicien from "../components/RepartitionParTechnicien";
 import ChatWidget from "@/components/Chat/ChatWidget";
+import PatchNotesModal from "@/components/PatchNotesModal";
 
 export default function DashboardTechnique({ user, onLogout }) {
   const [visites, setVisites] = useState([]);
@@ -186,6 +187,7 @@ export default function DashboardTechnique({ user, onLogout }) {
 
   return (
     <div className="dashboard-container">
+      <PatchNotesModal />
       <Header
         user={user}
         searchRef={searchRef}

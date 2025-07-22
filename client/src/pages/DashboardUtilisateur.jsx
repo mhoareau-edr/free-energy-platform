@@ -24,6 +24,7 @@ import ChatFullScreen from "@/components/Chat/ChatFullScreen";
 import Header from "@/components/Header";
 import { socket } from "../socket";
 import ChatWidget from "@/components/Chat/ChatWidget";
+import PatchNotesModal from "@/components/PatchNotesModal";
 
 const iconMap = {
   FaTimesCircle: <FaTimesCircle className="text-red-500" />,
@@ -305,7 +306,9 @@ export default function DashboardUtilisateur({ user, onLogout }) {
 
 
   return (
+    
     <div className="dashboard-container">
+      <PatchNotesModal />
       <Header
         user={user}
         searchRef={searchRef}
