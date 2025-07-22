@@ -48,6 +48,7 @@ export default function DashboardTechnique({ user, onLogout }) {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showFullChat, setShowFullChat] = useState(false);
   const [selectedMiniChatUser, setSelectedMiniChatUser] = useState(null);
+  
 
   const API = import.meta.env.VITE_API_URL;
 
