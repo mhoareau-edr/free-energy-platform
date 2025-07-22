@@ -1236,6 +1236,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
               </div>
             )}
 
+
             {selectedPhoto !== null && (
               <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
                 <div className="relative flex items-center gap-4">

@@ -8,7 +8,7 @@ export default function ClientHistory({ visiteId }) {
   useEffect(() => {
     const fetchClientHistory = async () => {
       try {
-        const res = await fetch(`${API}/history/client/${visiteId}`);
+        const res = await fetch(`${API}/visites/${visiteId}/historique`);
         const data = await res.json();
         const sorted = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
         setHistory(sorted);

@@ -441,6 +441,24 @@ router.put("/:id/etape", async (req, res) => {
   }
 });
 
+// 🔄 Historique d'une visite
+router.get("/:id/historique", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const history = await prisma.history.findMany({
+      where: { visiteId: parseInt(id) },
+      orderBy: { date: "desc" }
+    });
+
+    res.status(200).json(history);
+  } catch (error) {
+    console.error("Erreur récupération historique :", error);
+    res.status(500).json({ error: "Impossible de récupérer l'historique" });
+  }
+});
+
+
 router.put("/:id/permis", async (req, res) => {
   const { id } = req.params;
   const { permisPath, user } = req.body;
