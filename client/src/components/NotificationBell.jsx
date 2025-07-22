@@ -88,9 +88,10 @@ export default function NotificationBell({ user }) {
       });
 
       if (res.ok) {
-        setNotifications((prev) =>
+        setNotifications((prev = []) =>
           Array.isArray(prev) ? prev.filter((n) => n.id !== id) : []
         );
+
 
       }
     } catch (err) {
