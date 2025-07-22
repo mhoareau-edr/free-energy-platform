@@ -12,14 +12,15 @@ const filtresEtapes = [
   "Terminé",
 ];
 
-export default function ListeDemandes({ visites, onSelectClient, onVoirTous, getEtapeStyle, currentUser }) {
+export default function ListeDemandes({ visites = [], onSelectClient, onVoirTous, getEtapeStyle, currentUser }) {
 
   const [filtre, setFiltre] = useState("Toutes");
   const [showLockedPopup, setShowLockedPopup] = useState(false);
 
-  const visitesFiltrees =
-    filtre === "Toutes" ? visites : visites.filter((v) => v.etape === filtre);
-
+  const visitesFiltrees = Array.isArray(visites)
+    ? (filtre === "Toutes" ? visites : visites.filter((v) => v.etape === filtre))
+  : [];
+  
   const affichageLimite = visitesFiltrees.slice(0, 5);
 
   return (

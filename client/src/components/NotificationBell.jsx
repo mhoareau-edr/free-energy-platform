@@ -68,7 +68,10 @@ export default function NotificationBell({ user }) {
   }, [user.role, user.id]);
 
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const unreadCount = Array.isArray(notifications)
+    ? notifications.filter(n => !n.isRead).length
+  : 0;
+
 
   const toggleDropdown = () => setShowDropdown(prev => !prev);
 
@@ -85,7 +88,10 @@ export default function NotificationBell({ user }) {
       });
 
       if (res.ok) {
-        setNotifications((prev) => prev.filter((n) => n.id !== id));
+        setNotifications((prev) =>
+          Array.isArray(prev) ? prev.filter((n) => n.id !== id) : []
+        );
+
       }
     } catch (err) {
       console.error("Erreur suppression notification :", err);

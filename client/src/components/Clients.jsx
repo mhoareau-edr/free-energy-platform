@@ -13,6 +13,11 @@ export default function Clients({ visites, onSelectClient, getEtapeStyle, onClos
     technicien_vt: "",
     type_client: "",
   });
+  if (!Array.isArray(visites)) {
+    console.warn("Les visites reçues ne sont pas un tableau :", visites);
+    return <p className="text-red-500">Erreur de chargement des données.</p>;
+  }
+
   const [showLockedPopup, setShowLockedPopup] = useState(false);
   const [technicienVerrou, setTechnicienVerrou] = useState("");
 

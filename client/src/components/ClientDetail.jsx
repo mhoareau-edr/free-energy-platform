@@ -195,7 +195,12 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                   onClick={async () => {
                     const res = await fetch(`${API}/users`);
                     const data = await res.json();
-                    setAvailableUsers(data.filter(u => u.role === "Technique" && u.name !== user.name));
+                    if (Array.isArray(data)) {
+                      setAvailableUsers(data.filter(u => u.role === "Technique" && u.name !== user.name));
+                    } else {
+                      console.warn("Format inattendu des utilisateurs :", data);
+                      setAvailableUsers([]);
+                    }
                     setShowTransferModal(true);
                   }}
                 >
