@@ -13,7 +13,6 @@ import DetailsPoseClient from "./DetailsPoseClient";
 import UploaderPhotosPose from "./UploaderPhotosPose";
 import moment from "moment";
 import confetti from "canvas-confetti";
-import ClientHistory from "../components/ClientHistory";
 
 export default function ClientDetail({ visite, onClose, user, refreshVisites, refreshActivities }) {
   const [activeTab, setActiveTab] = useState("suivi");
@@ -202,6 +201,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                       console.warn("Format inattendu des utilisateurs :", data);
                       setAvailableUsers([]);
                     }
+
                     setShowTransferModal(true);
                   }}
                 >
@@ -223,7 +223,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
         {/* CENTER COLUMN */}
         <div className="client-center-column">
           <div className="client-tabs">
-            {["suivi", "photos", "documents", "historique"].map((tab) => (
+            {["suivi", "photos", "documents"].map((tab) => (
               <button
                 key={tab}
                 className={`client-tab-button dark:text-white ${activeTab === tab ? "active" : ""}`}
@@ -232,15 +232,11 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                 {tab === "suivi"
                   ? "Suivi de dossier"
                   : tab === "photos"
-                  ? "Photos de la pose"
-                  : tab === "documents"
-                  ? "Documents"
-                  : "Historique du client"}
+                    ? "Photos de la pose"
+                    : "Documents"}
               </button>
             ))}
-
           </div>
-
 
           <div className="tab-content ">
             {activeTab === "suivi" && (
@@ -1229,13 +1225,6 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                 onUpdateDocuments={triggerDocumentRefresh}
               />
             )}
-
-            {activeTab === "historique" && (
-              <div className="mt-4">
-                <ClientHistory visiteId={visite.id} />
-              </div>
-            )}
-
 
             {selectedPhoto !== null && (
               <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
