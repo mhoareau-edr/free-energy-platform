@@ -4,7 +4,6 @@ const VERSION_PATCH = "1.0.0";
 
 export default function PatchNotesModal() {
   const [show, setShow] = useState(true);
-  const [dontShowAgain, setDontShowAgain] = useState(false);
 
   useEffect(() => {
     const lastSeen = localStorage.getItem("patchNotesVersion");
@@ -14,9 +13,7 @@ export default function PatchNotesModal() {
   }, []);
 
   const closeModal = () => {
-    if (dontShowAgain) {
-      localStorage.setItem("patchNotesVersion", VERSION_PATCH);
-    }
+    localStorage.setItem("patchNotesVersion", VERSION_PATCH);
     setShow(false);
   };
 
@@ -57,14 +54,6 @@ export default function PatchNotesModal() {
           <li>Ajout de la possibilité de joindre des photos des poses (Onglet "Photos de la pose").</li>
           <li>Nouveauté : "Répartition des dossiers par technicien".</li>
         </ul>
-        <label className="text-sm flex items-center gap-2 text-black dark:text-white mt-8">
-          <input
-            type="checkbox"
-            checked={dontShowAgain}
-            onChange={() => setDontShowAgain(!dontShowAgain)}
-          />
-          Ne plus afficher jusqu'à la prochaine mise à jour
-        </label>
       </div>
     </div>
   );
