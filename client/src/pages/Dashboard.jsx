@@ -68,6 +68,18 @@ export default function DashboardAdministratif({ user, onLogout }) {
   const dossiersEnCours = visites.filter(v => ["Visite Technique", "DP", "RAC", "VAD", "Pose"].includes(v.etape)).length;
   const dossiersTermines = visites.filter(v => v.etape === "Terminé").length;
 
+  const handleSelectClient = async (v) => {
+    if (v.etape === "Demande de VT") {
+      await fetch(`${API}/visites/${v.id}/etape`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ etape: "Visite Technique", user: user.name })
+      });
+      v.etape = "Visite Technique";
+    }
+    setSelectedClient(v);
+  };
+
   useEffect(() => {
     fetchVisites();
     fetchUsers();

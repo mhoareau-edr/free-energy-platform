@@ -110,6 +110,7 @@ export default function DashboardTechnique({ user, onLogout }) {
     }
     setSelectedClient(v);
   };
+  
   const handleVoirTous = () => {
     setShowAllClients(true);
   };
