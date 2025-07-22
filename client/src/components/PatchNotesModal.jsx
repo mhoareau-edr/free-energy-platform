@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 const VERSION_PATCH = "1.0.0";
 
 export default function PatchNotesModal() {
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     const lastSeen = localStorage.getItem("patchNotesVersion");
