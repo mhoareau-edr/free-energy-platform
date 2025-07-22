@@ -24,6 +24,7 @@ import ChatFullScreen from "@/components/Chat/ChatFullScreen";
 import Header from "@/components/Header";
 import RepartitionParTechnicien from "../components/RepartitionParTechnicien";
 const API = import.meta.env.VITE_API_URL;
+import PatchNotesModal from "@/components/PatchNotesModal";
 
 const socket = io(API);
 
@@ -94,6 +95,7 @@ export default function DashboardAdministratif({ user, onLogout }) {
 
   return (
     <div className="dashboard-container">
+      <PatchNotesModal />
       <Header
         user={user}
         searchRef={searchRef}

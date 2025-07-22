@@ -3,17 +3,9 @@ import { useEffect, useState } from "react";
 const VERSION_PATCH = "1.0.0";
 
 export default function PatchNotesModal() {
-  const [show, setShow] = useState(false);
-
-  useEffect(() => {
-    const lastSeen = localStorage.getItem("patchNotesVersion");
-    if (lastSeen !== VERSION_PATCH) {
-      setShow(true);
-    }
-  }, []);
+  const [show, setShow] = useState(true);
 
   const closeModal = () => {
-    localStorage.setItem("patchNotesVersion", VERSION_PATCH);
     setShow(false);
   };
 
@@ -29,8 +21,15 @@ export default function PatchNotesModal() {
           ×
         </button>
         <h2 className="text-xl font-bold mb-4 text-primary">🛠️ Mise à jour {VERSION_PATCH}</h2>
+        <h2 className="text-xl font-bold text-primary">Global</h2>
+        <p className="text-s">Bienvenue sur la nouvelle interface de Free Energy !</p>
         <ul className="list-disc list-inside text-sm space-y-2 text-gray-700 dark:text-white">
-          <li>Bienvenue sur la nouvelle interface de Free Energy !</li>
+          <li>Ajout des étapes : Consuel & EDF</li>
+        </ul>
+        <h2 className="text-xl font-bold text-primary">Administratif</h2>
+        <ul className="list-disc list-inside text-sm space-y-2 text-gray-700 dark:text-white">
+          <li>Modification du formulaire de demande de VT : Ajout du "BToB" et du "BToC" </li>
+          <li>Modification du formulaire de demande de VT : Ajout du "BToB" et du "BToC" </li>
         </ul>
       </div>
     </div>
