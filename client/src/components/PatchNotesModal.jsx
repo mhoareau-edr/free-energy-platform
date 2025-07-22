@@ -27,6 +27,11 @@ export default function PatchNotesModal() {
         <ul className="list-disc list-inside text-sm space-y-2 text-gray-700 dark:text-white">
           <li>Ajout des étapes : Consuel & EDF</li>
           <li>Ajout d'une interface pour l'étape "Terminée"</li>
+          <li>Ajout d'une messagerie interne (Messages)</li>
+          <li>Nouvelle fonctionnalité : Mode Clair/Sombre</li>
+          <li>Nouvelle fonctionnalité : Possibilité de réduire le menu de gauche</li>
+          <li>Bug réglé : Lecture des documents impossible (Onglet "Documents")</li>
+          <li>Possibilité de filtrer les clients par types de client (BTOB ou BTOC) sur la page "Clients"</li>
         </ul>
 
         <h2 className="text-xl font-bold mt-4 text-primary">Administratif</h2>
@@ -39,6 +44,7 @@ export default function PatchNotesModal() {
         <ul className="list-disc list-inside text-sm space-y-2 text-gray-700 dark:text-white">
           <li>Modification de l'interface de pose</li>
           <li>Ajout de la possibilité de joindre des photos des poses (Onglet "Photos de la pose")</li>
+          <li>Nouveauté : "Répartition des dossiers par technicien"</li>
         </ul>
       </div>
     </div>
