@@ -57,7 +57,7 @@ export default function PatchNotesModal() {
           <li>Ajout de la possibilité de joindre des photos des poses (Onglet "Photos de la pose").</li>
           <li>Nouveauté : "Répartition des dossiers par technicien".</li>
         </ul>
-        <label className="text-sm flex items-center gap-2 text-gray-700 dark:text-white mt-2">
+        <label className="text-sm flex items-center gap-2 text-black dark:text-white mt-8">
           <input
             type="checkbox"
             checked={dontShowAgain}
