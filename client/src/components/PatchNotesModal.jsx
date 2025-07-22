@@ -31,10 +31,10 @@ export default function PatchNotesModal() {
         >
           ×
         </button>
-        <h2 className="text-xl font-bold text-primary">🛠️ Mise à jour {VERSION_PATCH}</h2>
+        <h2 className="text-3xl font-bold text-primary">🛠️ Mise à jour {VERSION_PATCH}</h2>
         <p className="text-s">Bienvenue sur la nouvelle interface de Free Energy !</p>
 
-        <h2 className="text-3xl font-bold mt-4 text-primary">Global</h2>
+        <h2 className="text-xl font-bold mt-4 text-primary">Global</h2>
         <ul className="list-disc list-inside text-sm space-y-2 text-gray-700 dark:text-white">
           <li>Ajout des étapes : Consuel & EDF.</li>
           <li>Ajout d'une interface pour l'étape "Terminée".</li>
