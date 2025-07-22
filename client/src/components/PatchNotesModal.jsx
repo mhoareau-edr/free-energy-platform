@@ -31,10 +31,10 @@ export default function PatchNotesModal() {
         >
           ×
         </button>
-        <h2 className="text-3xl font-bold text-primary">🛠️ Mise à jour {VERSION_PATCH}</h2>
-        <p className="text-s">Bienvenue sur la nouvelle interface de Free Energy !</p>
+        <h2 className="text-3xl mb-2 font-bold text-primary uppercase">🛠️ Mise à jour {VERSION_PATCH}</h2>
+        <p className="text-s">Bienvenue sur la nouvelle interface de Free Energy ! 🎉</p>
 
-        <h2 className="text-xl font-bold mt-4 text-primary">Global</h2>
+        <h2 className="text-xl font-bold mt-4 text-primary uppercase">Global</h2>
         <ul className="list-disc list-inside text-sm space-y-2 text-gray-700 dark:text-white">
           <li>Ajout des étapes : Consuel & EDF.</li>
           <li>Ajout d'une interface pour l'étape "Terminée".</li>
@@ -45,13 +45,13 @@ export default function PatchNotesModal() {
           <li>Possibilité de filtrer les clients par types de client (BTOB ou BTOC) sur la page "Clients".</li>
         </ul>
 
-        <h2 className="text-xl font-bold mt-4 text-primary">Administratif</h2>
+        <h2 className="text-xl  font-bold mt-4 text-primary uppercase">Administratif</h2>
         <ul className="list-disc list-inside text-sm space-y-2 text-gray-700 dark:text-white">
           <li>Modification du formulaire de demande de VT : Ajout du type de client "BToB" et du "BToC".</li>
           <li>Modification de l'interface de pose.</li>
         </ul>
 
-        <h2 className="text-xl font-bold mt-4 text-primary">Technique</h2>
+        <h2 className="text-xl font-bold mt-4 text-primary uppercase">Technique</h2>
         <ul className="list-disc list-inside text-sm space-y-2 text-gray-700 dark:text-white">
           <li>Modification de l'interface de pose.</li>
           <li>Ajout de la possibilité de joindre des photos des poses (Onglet "Photos de la pose").</li>
