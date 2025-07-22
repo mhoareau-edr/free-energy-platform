@@ -8,7 +8,6 @@ import DashboardUtilisateur from "./pages/DashboardUtilisateur";
 import DashboardTechnique from "./pages/DashboardTechnique";
 import ChatFullScreen from "./components/Chat/ChatFullScreen";
 import ChatRouteWrapper from "./ChatRouteWrapper";
-import DashboardPoseur from "./pages/DashboardPoseur";
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -48,13 +47,11 @@ export default function App() {
               element={
                 currentUser.role === "Admin" ? (
                   <DashboardAdmin user={currentUser} onLogout={handleLogout} />
-                ) : currentUser.role === "Technique" ? ( 
+                ) : currentUser.role === "Technique" ? (
                   <DashboardTechnique user={currentUser} onLogout={handleLogout} />
-                ) : currentUser.role ==="Poseur" ? (
-                  <DashboardPoseur user={currentUser} onLogout={handleLogout} />
                 ) : (
                   <DashboardUtilisateur user={currentUser} onLogout={handleLogout} />
-                ) 
+                )
               }
             />
             <Route
