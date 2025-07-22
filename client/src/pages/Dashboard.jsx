@@ -222,7 +222,7 @@ export default function DashboardAdministratif({ user, onLogout }) {
                     {users.map((u) => (
                       <li
                         key={u.id}
-                        className="bg-gray-50 p-3 rounded-lg shadow-sm border flex justify-between items-center"
+                        className="bg-gray-50 p-3 rounded-lg shadow-sm border flex justify-between items-center dark:bg-[#353c42] dark:border-gray-800"
                       >
                         <div>
                           <strong>{u.name}</strong> – {u.email} ({u.role})
