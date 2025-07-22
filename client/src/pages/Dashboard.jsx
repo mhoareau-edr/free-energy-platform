@@ -88,6 +88,20 @@ export default function DashboardAdministratif({ user, onLogout }) {
     return () => clearInterval(interval);
   }, []);
 
+  const getEtapeStyle = (etape) => {
+    switch (etape) {
+      case "Demande de VT": return "bg-yellow-100 text-yellow-800";
+      case "Visite Technique": return "bg-orange-100 text-orange-800";
+      case "DP": return "bg-blue-100 text-blue-800";
+      case "RAC": return "bg-purple-100 text-purple-800";
+      case "VAD": return "bg-green-100 text-green-800";
+      case "Pose": return "bg-teal-100 text-teal-800";
+      case "Terminé": return "bg-green-600 text-white";
+      case "Annulée": return "bg-red-800 text-white";
+      default: return "bg-gray-100 text-gray-800";
+    }
+  };
+
   const handleCreateUser = async () => {
     const newUser = { name, displayName, email, password, role };
     const res = await fetch(`${API}/users`, {
