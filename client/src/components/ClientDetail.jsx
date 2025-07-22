@@ -13,6 +13,7 @@ import DetailsPoseClient from "./DetailsPoseClient";
 import UploaderPhotosPose from "./UploaderPhotosPose";
 import moment from "moment";
 import confetti from "canvas-confetti";
+import ClientHistory from "../components/ClientHistory";
 
 export default function ClientDetail({ visite, onClose, user, refreshVisites, refreshActivities }) {
   const [activeTab, setActiveTab] = useState("suivi");
@@ -222,7 +223,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
         {/* CENTER COLUMN */}
         <div className="client-center-column">
           <div className="client-tabs">
-            {["suivi", "photos", "documents"].map((tab) => (
+            {["suivi", "photos", "documents", "historique"].map((tab) => (
               <button
                 key={tab}
                 className={`client-tab-button dark:text-white ${activeTab === tab ? "active" : ""}`}
@@ -231,11 +232,15 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                 {tab === "suivi"
                   ? "Suivi de dossier"
                   : tab === "photos"
-                    ? "Photos de la pose"
-                    : "Documents"}
+                  ? "Photos de la pose"
+                  : tab === "documents"
+                  ? "Documents"
+                  : "Historique du client"}
               </button>
             ))}
+
           </div>
+
 
           <div className="tab-content ">
             {activeTab === "suivi" && (
@@ -1223,6 +1228,12 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                 refreshTrigger={docRefreshFlag}
                 onUpdateDocuments={triggerDocumentRefresh}
               />
+            )}
+
+            {activeTab === "historique" && (
+              <div className="mt-4">
+                <ClientHistory visiteId={visite.id} />
+              </div>
             )}
 
             {selectedPhoto !== null && (
