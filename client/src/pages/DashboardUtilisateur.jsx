@@ -192,7 +192,8 @@ export default function DashboardUtilisateur({ user, onLogout }) {
   const dossiersTermines = visites.filter(v => v.etape === "Terminé").length;
   const dateFormatee = new Date().toLocaleDateString("fr-FR");
 
-  const demanderVT = async (visite) => {
+  const demanderVT = async () => {
+
   setLoading(true);
 
   try {
@@ -201,7 +202,7 @@ export default function DashboardUtilisateur({ user, onLogout }) {
     const payload = {
       nomSite: client,
       ...visites,
-      id: visite.id,
+      id: "temp",
       date_de_la_demande: dateFormatee,
       puissance_souhaitée: details.puissance_souhaitée,
       adresse_pose: adresse,
@@ -221,6 +222,8 @@ export default function DashboardUtilisateur({ user, onLogout }) {
       type_comptant: details.type_comptant,
       commentaires_technique: details.commentaires_technique
     };
+console.log("📨 fetch /generate-pdf en cours...");
+console.log("📨 fetch /visites en cours...");
 
     const pdfRes = await fetch(`${API}/generate-pdf`, {
       method: "POST",
@@ -239,6 +242,7 @@ export default function DashboardUtilisateur({ user, onLogout }) {
       procesVerbalPath
     });
 
+    console.log("🧾 DÉMARRAGE demanderVT", payload);
 
     const res = await fetch(`${API}/visites`, {
       method: "POST",
@@ -535,7 +539,8 @@ export default function DashboardUtilisateur({ user, onLogout }) {
                 <textarea className="form-input mt-4 w-full  dark:bg-[#1d2125] dark:border-[#363b41]" rows={3} placeholder="Commentaires techniques (facultatif)" value={details.commentaires_technique} onChange={e => setDetails({ ...details, commentaires_technique: e.target.value })} />
               </div>
 
-              <button onClick={demanderVT} className="primary-button w-full mt-4" disabled={loading}>{loading ? "Envoi en cours..." : "Envoyer la demande"}</button>
+              <button onClick={() => demanderVT({ id: "temp" })} className="primary-button w-full mt-4" disabled={loading}></button>
+
             </div>
           </div>
         </div>
