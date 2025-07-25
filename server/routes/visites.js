@@ -241,10 +241,14 @@ router.post("/", async (req, res) => {
     const baseFolder = path.join(uploadDir, `visite-${newVisite.id}`);
 
 
-    fs.renameSync(pdfPath, path.join(uploadDir, newPdfPath));
-    fs.renameSync(bonLivraisonPath, path.join(uploadDir, newBonPath));
-    fs.renameSync(procesVerbalPath, path.join(uploadDir, newProcesPath));
+    fs.copyFileSync(pdfPath, path.join(uploadDir, newPdfPath));
+fs.unlinkSync(pdfPath);
 
+fs.copyFileSync(bonLivraisonPath, path.join(uploadDir, newBonPath));
+fs.unlinkSync(bonLivraisonPath);
+
+fs.copyFileSync(procesVerbalPath, path.join(uploadDir, newProcesPath));
+fs.unlinkSync(procesVerbalPath);
 
     console.log("📎 Chemins PDF:", { newPdfPath, newBonPath, newProcesPath });
 
