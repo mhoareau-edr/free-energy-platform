@@ -16,27 +16,10 @@ const DOCS_DIR = process.env.UPLOADS_DIR
   : path.join(__dirname, "..", "docs");
 
 const router = express.Router();
-const upload = multer();
 
-router.post("/generate-pdf", upload.any(), async (req, res) => {
+router.post("/generate-pdf", express.json(), async (req, res) => {
   try {
-    let data;
-
-    if (req.headers["content-type"]?.includes("multipart/form-data")) {
-      if (!req.body || !req.body.data) {
-        return res.status(400).json({ error: "'data' manquant dans FormData" });
-      }
-
-      try {
-        data = JSON.parse(req.body.data);
-
-      } catch (err) {
-        console.error("Erreur parsing JSON dans FormData :", err);
-        return res.status(400).json({ error: "Champ 'data' mal formé" });
-      }
-    } else {
-      data = req.body;
-    }
+    const data = req.body;
 
     const pdfPathBase = path.join(__dirname, "..", "assets", "formulaire_vt.pdf");
     const pdfBytes = fs.readFileSync(pdfPathBase);
@@ -188,6 +171,11 @@ router.post("/generate-pdf", upload.any(), async (req, res) => {
     fs.writeFileSync(outputPath, pdfBytesUpdated);
     console.log("✅ PDF bien écrit à :", outputPath, "Existe :", fs.existsSync(outputPath));
     console.log("🔢 Données reçues : ", data);
+    if (Array.isArray(data)) {
+      console.error("🚨 ERREUR : Un tableau a été reçu au lieu d’un objet !");
+      return res.status(400).json({ error: "Données mal formatées (tableau reçu au lieu d’un objet)" });
+    }
+
 
     let permisFilePath = null;
 
