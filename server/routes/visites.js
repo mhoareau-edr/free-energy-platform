@@ -232,7 +232,8 @@ router.post("/", async (req, res) => {
       }
     });
 
-    const basePath = path.join("uploads", `visite-${newVisite.id}`, "1. Pièces Administratives");
+    const basePath = path.join(`visite-${newVisite.id}`, "1. Pièces Administratives");
+
 
     const newBonPath = path.join(basePath, "Bon_de_livraison.pdf").replace(/\\/g, "/");
     const newPdfPath = path.join(basePath, "Fiche_Visite_Technique.pdf").replace(/\\/g, "/");
@@ -241,8 +242,8 @@ router.post("/", async (req, res) => {
 
 
     fs.renameSync(pdfPath, path.join(uploadDir, newPdfPath));
-fs.renameSync(bonLivraisonPath, path.join(uploadDir, newBonPath));
-fs.renameSync(procesVerbalPath, path.join(uploadDir, newProcesPath));
+    fs.renameSync(bonLivraisonPath, path.join(uploadDir, newBonPath));
+    fs.renameSync(procesVerbalPath, path.join(uploadDir, newProcesPath));
 
 
     console.log("📎 Chemins PDF:", { newPdfPath, newBonPath, newProcesPath });
