@@ -72,10 +72,13 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
   };
 
   const buildURL = (path) => {
-    const cleanedAPI = API.replace(/\/$/, ""); // supprime le slash final si présent
-    const cleanedPath = path.replace(/^\/+/, "");
-    return `${cleanedAPI}/${cleanedPath}`;
-  };
+  if (!path) return "";
+  const cleanedAPI = API.replace(/\/$/, "");
+  const cleanedPath = path.replace(/^\/+/, ""); // Supprime les `/` au début
+  return `${cleanedAPI}/${cleanedPath}`;
+};
+
+
 
   useEffect(() => {
   const fetchMainPDF = async () => {
@@ -383,7 +386,8 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                             <p><strong>✉️ Email :</strong> {visite.mail_interlocuteur || "—"}</p>
                             <p><strong>💡 Type :</strong> {visite.client_b2b ? "BtoB" : visite.client_b2c ? "BtoC" : "Non précisé"}</p>
                             <a
-  href={buildURL(visite.pdfPath)}
+                             href={buildURL(visite.pdfPath || fichePDFUrl)}
+
 
                               target="_blank"
                               rel="noopener noreferrer"
