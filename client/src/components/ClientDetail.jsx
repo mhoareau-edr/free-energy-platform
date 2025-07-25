@@ -87,16 +87,10 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
     fetchMainPDF();
   }, [visite]);
 
-  useEffect(() => {
-    console.log("✅ API:", API);
-    console.log("✅ visite.pdfPath:", visite.pdfPath);
-    console.log("✅ URL finale:", buildURL(visite.pdfPath));
-  }, [visite]);
-
 
   const buildURL = (path) => {
     const cleanedAPI = API.replace(/\/$/, ""); // supprime le slash final si présent
-    const cleanedPath = path.replace(/^\/?/, ""); // supprime le slash de début s'il y en a un
+    const cleanedPath = path.replace(/^\/+/, "");
     return `${cleanedAPI}/${cleanedPath}`;
   };
 
