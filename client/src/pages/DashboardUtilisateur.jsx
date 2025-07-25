@@ -230,7 +230,8 @@ export default function DashboardUtilisateur({ user, onLogout }) {
 
     if (!pdfRes.ok) throw new Error("Erreur lors de la génération du PDF");
 
-    const { pdfPath, bonLivraisonPath, procesVerbalPath } = await pdfRes.json();
+    const { absolutePath: pdfPath, bonLivraisonPath, procesVerbalPath } = await pdfRes.json();
+
     toast.success("Visite Technique demandée !");
 
     const res = await fetch(`${API}/visites`, {

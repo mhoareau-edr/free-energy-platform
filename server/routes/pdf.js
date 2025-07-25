@@ -244,6 +244,7 @@ router.post("/generate-pdf", upload.any(), async (req, res) => {
 
     res.status(200).json({
       pdfPath: data.outputPath || `pdf/${fileName}`,
+      absolutePath: outputPath, // <--- ceci est important
       bonLivraisonPath,
       procesVerbalPath,
       permisPath: permisFilePath

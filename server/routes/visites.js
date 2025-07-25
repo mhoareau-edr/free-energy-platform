@@ -200,7 +200,6 @@ router.post("/", async (req, res) => {
     const newPdfPath = path.join(basePath, "Fiche_Visite_Technique.pdf").replace(/\\/g, "/");
     const newProcesPath = path.join(basePath, "Proces_Verbal_Reception.pdf").replace(/\\/g, "/");
 
-
     const pdfFinalPath = path.join(UPLOADS_DIR, `visite-${newVisite.id}`, "1. Pièces Administratives", "Fiche_Visite_Technique.pdf");
     fs.copyFileSync(pdfPath, pdfFinalPath);
     fs.unlinkSync(pdfPath);
