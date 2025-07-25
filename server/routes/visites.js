@@ -228,21 +228,21 @@ router.post("/", async (req, res) => {
         {
           nom: "Fiche_Visite_Technique.pdf",
           type: "pdf",
-          chemin: pdfFinalPath,
+          chemin: path.join("uploads", `visite-${newVisite.id}`, "1. Pièces Administratives", "Fiche_Visite_Technique.pdf").replace(/\\/g, "/"),
           path: "/1. Pièces Administratives",
           visiteId: newVisite.id
         },
         {
           nom: "Bon_de_livraison.pdf",
           type: "pdf",
-          chemin: bonFinalPath,
+          chemin: path.join("uploads", `visite-${newVisite.id}`, "1. Pièces Administratives", "Bon_de_livraison.pdf").replace(/\\/g, "/"),
           path: "/1. Pièces Administratives",
           visiteId: newVisite.id
         },
         {
           nom: "Proces_Verbal_Reception.pdf",
           type: "pdf",
-          chemin: procesFinalPath,
+          chemin: path.join("uploads", `visite-${newVisite.id}`, "1. Pièces Administratives", "Proces_Verbal_Reception.pdf").replace(/\\/g, "/"),
           path: "/1. Pièces Administratives",
           visiteId: newVisite.id
         }

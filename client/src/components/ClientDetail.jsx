@@ -161,7 +161,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
 
           <div className="mt-6 space-y-2">
             <a
-              href={`${API}${visite.pdfPath}`}
+              href={`${API}/${visite.pdfPath}`}
               target="_blank"
               rel="noopener noreferrer"
               className="block text-center bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded"
