@@ -187,6 +187,7 @@ router.post("/generate-pdf", upload.any(), async (req, res) => {
     console.log("🧾 Sauvegarde PDF dans :", outputPath);
     fs.writeFileSync(outputPath, pdfBytesUpdated);
     console.log("✅ PDF bien écrit à :", outputPath, "Existe :", fs.existsSync(outputPath));
+    console.log("🔢 Données reçues : ", data);
 
     let permisFilePath = null;
 
@@ -254,12 +255,15 @@ router.post("/generate-pdf", upload.any(), async (req, res) => {
     }
 
     res.status(200).json({
-  pdfPath: data.outputPath || `pdf/${fileName}`,
-  absolutePath: fs.existsSync(outputPath) ? outputPath : null,
-  bonLivraisonPath,
-  procesVerbalPath,
-  permisPath: permisFilePath
-});
+    pdfPath: data.outputPath || `pdf/${fileName}`,
+    absolutePath: outputPath,
+    bonLivraisonPath,
+    procesVerbalPath,
+    permisPath: permisFilePath
+  });
+
+    console.log("✅ Requête terminée. Chemins renvoyés :");
+console.log({ absolutePath: outputPath, pdfPath: data.outputPath || `pdf/${fileName}` });
 
 
 

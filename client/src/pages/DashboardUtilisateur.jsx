@@ -243,6 +243,8 @@ export default function DashboardUtilisateur({ user, onLogout }) {
       outputPath: `uploads/visite-${newVisite.id}/1._Pieces_Administratives/Fiche_Visite_Technique.pdf`
     };
 
+    console.log("📦 Payload envoyé :", payload);
+
     const pdfRes = await fetch(`${API}/generate-pdf`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
