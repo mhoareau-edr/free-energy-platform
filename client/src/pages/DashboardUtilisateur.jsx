@@ -193,16 +193,35 @@ export default function DashboardUtilisateur({ user, onLogout }) {
   const dateFormatee = new Date().toLocaleDateString("fr-FR");
 
   const demanderVT = async () => {
-
   setLoading(true);
 
   try {
     const dateFormatee = new Date().toLocaleDateString("fr-FR");
 
+    // Étape 1 : Créer la visite en BDD pour récupérer un ID
+    const createRes = await fetch(`${API}/visites`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        client,
+        adresse,
+        demandeur: user.name,
+        user: user.name,
+        details,
+        type_abonnement: details.type_abonnement,
+        type_comptant: details.type_comptant,
+        client_b2b: details.client_b2b,
+        client_b2c: details.client_b2c
+      })
+    });
+
+    if (!createRes.ok) throw new Error("Erreur lors de la création de la visite");
+    const newVisite = await createRes.json();
+
+    // Étape 2 : Générer les PDF avec l'ID réel
     const payload = {
+      id: newVisite.id,
       nomSite: client,
-      ...visites,
-      id: "temp",
       date_de_la_demande: dateFormatee,
       puissance_souhaitée: details.puissance_souhaitée,
       adresse_pose: adresse,
@@ -220,10 +239,9 @@ export default function DashboardUtilisateur({ user, onLogout }) {
       non_maintenance: details.non_maintenance,
       type_abonnement: details.type_abonnement,
       type_comptant: details.type_comptant,
-      commentaires_technique: details.commentaires_technique
+      commentaires_technique: details.commentaires_technique,
+      outputPath: `uploads/visite-${newVisite.id}/1._Pieces_Administratives/Fiche_Visite_Technique.pdf`
     };
-console.log("📨 fetch /generate-pdf en cours...");
-console.log("📨 fetch /visites en cours...");
 
     const pdfRes = await fetch(`${API}/generate-pdf`, {
       method: "POST",
@@ -232,42 +250,31 @@ console.log("📨 fetch /visites en cours...");
     });
 
     if (!pdfRes.ok) throw new Error("Erreur lors de la génération du PDF");
-
     const { pdfPath, absolutePath, bonLivraisonPath, procesVerbalPath } = await pdfRes.json();
 
-    toast.success("Visite Technique demandée !");
-    console.log("🧾 Chemins PDF envoyés au backend :", {
-      absolutePath,
-      bonLivraisonPath,
-      procesVerbalPath
+    console.log("✅ Chemins PDF :", { pdfPath, absolutePath, bonLivraisonPath, procesVerbalPath });
+
+    // Étape 3 : Mettre à jour la visite avec les chemins PDF
+    await fetch(`${API}/visites/${newVisite.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pdfPath, absolutePath, bonLivraisonPath, procesVerbalPath })
     });
 
-    console.log("🧾 DÉMARRAGE demanderVT", payload);
-
-    const res = await fetch(`${API}/visites`, {
+    // Étape 4 : Notification interne
+    await fetch(`${API}/notifications`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        client,
-        adresse,
-        demandeur: user.name,
-        pdfPath,
-        absolutePath,
-        bonLivraisonPath,
-        procesVerbalPath,
-        details,
-        user: user.name,
-        type_abonnement: details.type_abonnement,
-        type_comptant: details.type_comptant,
-        client_b2b: details.client_b2b,
-        client_b2c: details.client_b2c
+        message: `Visite Technique demandée pour ${details.nom_interlocuteur || "un client"}.`,
+        type: "system",
+        target: "Technique",
+        senderId: user.id,
+        senderName: user.name
       })
     });
 
-    if (!res.ok) throw new Error("Erreur lors de la création de la visite");
-
-    const newVisite = await res.json();
-
+    toast.success("Visite Technique demandée !");
     setClient("");
     setAdresse("");
     setDetails({
@@ -291,34 +298,23 @@ console.log("📨 fetch /visites en cours...");
       client_b2c: false
     });
 
-    await fetch(`${API}/notifications`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message: `Visite Technique demandée pour ${visite.nom_interlocuteur || "un client"}.`,
-        type: "system",
-        target: "Technique",
-        senderId: user.id,
-        senderName: user.name,
-      }),
-    });
-
     setShowForm(false);
     fetchVisites();
     fetchActivities();
     setSelectedClient(newVisite);
 
   } catch (err) {
-    console.error("Erreur lors de la demande de VT :", err);
+    console.error("❌ Erreur lors de la demande de VT :", err);
     toast.error("Erreur lors de la demande");
   } finally {
-    setLoading(false); // ✅ On stoppe le chargement quoi qu’il arrive
+    setLoading(false);
   }
 };
 
 
+
   return (
-    
+
     <div className="dashboard-container">
       <PatchNotesModal />
       <Header
