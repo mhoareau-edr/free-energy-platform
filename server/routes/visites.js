@@ -223,9 +223,13 @@ router.post("/", async (req, res) => {
 
     // ✅ Utilise les chemins absolus reçus du frontend
     if (req.body.absolutePath && fs.existsSync(req.body.absolutePath)) {
+      console.log("✅ absolutePath reçu :", req.body.absolutePath);
       fs.copyFileSync(req.body.absolutePath, pdfFinalPath);
       fs.unlinkSync(req.body.absolutePath);
+    } else {
+      console.warn("❌ Pas de PDF généré : absolutePath manquant ou introuvable");
     }
+
 
     if (req.body.bonLivraisonPath && fs.existsSync(req.body.bonLivraisonPath)) {
       fs.copyFileSync(req.body.bonLivraisonPath, bonFinalPath);
