@@ -240,10 +240,7 @@ router.post("/", async (req, res) => {
     fs.copyFileSync(req.body.procesVerbalPath, procesFinalPath);
     fs.unlinkSync(req.body.procesVerbalPath);
     }
-
-    console.log("📎 Chemins PDF:", { pdfFinalPath, bonFinalPath, procesFinalPath });
     
-
     await prisma.document.createMany({
   data: [
     {
@@ -269,9 +266,6 @@ router.post("/", async (req, res) => {
     }
   ]
 });
-
-
-    console.log("✅ Dossiers créés pour la visite :", dossierBase);
 
     await prisma.visite.update({
       where: { id: newVisite.id },
@@ -301,6 +295,55 @@ router.post("/", async (req, res) => {
     res.status(500).json({ error: "Erreur lors de la création de la visite." });
   }
 });
+
+router.put("/visites/:id", async (req, res) => {
+  const { id } = req.params;
+  const { pdfPath, absolutePath, bonLivraisonPath, procesVerbalPath } = req.body;
+
+  const dossierNom = normalizeFolderName("1. Pièces Administratives");
+  const dossierBase = path.join(UPLOADS_DIR, `visite-${id}`);
+  const basePath = path.join("uploads", `visite-${id}`, dossierNom);
+
+  const pdfFinalPath = path.join(UPLOADS_DIR, `visite-${id}`, dossierNom, "Fiche_Visite_Technique.pdf");
+  const bonFinalPath = path.join(UPLOADS_DIR, `visite-${id}`, dossierNom, "Bon_de_livraison.pdf");
+  const procesFinalPath = path.join(UPLOADS_DIR, `visite-${id}`, dossierNom, "Proces_Verbal_Reception.pdf");
+
+  try {
+    if (absolutePath && fs.existsSync(absolutePath)) {
+      fs.copyFileSync(absolutePath, pdfFinalPath);
+      fs.unlinkSync(absolutePath);
+    }
+
+    if (bonLivraisonPath && fs.existsSync(bonLivraisonPath)) {
+      fs.copyFileSync(bonLivraisonPath, bonFinalPath);
+      fs.unlinkSync(bonLivraisonPath);
+    }
+
+    if (procesVerbalPath && fs.existsSync(procesVerbalPath)) {
+      fs.copyFileSync(procesVerbalPath, procesFinalPath);
+      fs.unlinkSync(procesVerbalPath);
+    }
+
+    await prisma.visite.update({
+      where: { id: parseInt(id) },
+      data: { pdfPath: path.join(basePath, "Fiche_Visite_Technique.pdf").replace(/\\/g, "/") }
+    });
+
+    await prisma.document.createMany({
+      data: [
+        { nom: "Fiche_Visite_Technique.pdf", type: "pdf", chemin: path.join(basePath, "Fiche_Visite_Technique.pdf").replace(/\\/g, "/"), path: `/${dossierNom}`, visiteId: parseInt(id) },
+        { nom: "Bon_de_livraison.pdf", type: "pdf", chemin: path.join(basePath, "Bon_de_livraison.pdf").replace(/\\/g, "/"), path: `/${dossierNom}`, visiteId: parseInt(id) },
+        { nom: "Proces_Verbal_Reception.pdf", type: "pdf", chemin: path.join(basePath, "Proces_Verbal_Reception.pdf").replace(/\\/g, "/"), path: `/${dossierNom}`, visiteId: parseInt(id) },
+      ]
+    });
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("Erreur update fichiers PDF :", error);
+    res.status(500).json({ error: "Impossible de mettre à jour les fichiers PDF." });
+  }
+});
+
 
 /* DELETE VISITE */
 router.delete("/:id", async (req, res) => {
@@ -809,6 +852,8 @@ router.get("/:id/documents/full-tree", async (req, res) => {
     res.status(500).json({ error: "Impossible de lister les fichiers." });
   }
 });
+
+
 
 
 router.delete("/:id/documents", async (req, res) => {

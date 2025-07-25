@@ -184,7 +184,9 @@ router.post("/generate-pdf", upload.any(), async (req, res) => {
       fs.mkdirSync(outputDir, { recursive: true });
     }
 
+    console.log("🧾 Sauvegarde PDF dans :", outputPath);
     fs.writeFileSync(outputPath, pdfBytesUpdated);
+    console.log("✅ PDF bien écrit à :", outputPath, "Existe :", fs.existsSync(outputPath));
 
     let permisFilePath = null;
 
@@ -247,6 +249,9 @@ router.post("/generate-pdf", upload.any(), async (req, res) => {
       ["technicien_vt", "date_de_la_demande", "nom_interlocuteur", "adresse_pose", "tel_interlocuteur"]
     );
 
+    if (!fs.existsSync(outputPath)) {
+      console.error("❌ ERREUR : absolutePath ne pointe pas vers un fichier existant :", outputPath);
+    }
 
     res.status(200).json({
       pdfPath: data.outputPath || `pdf/${fileName}`,

@@ -252,8 +252,6 @@ export default function DashboardUtilisateur({ user, onLogout }) {
     if (!pdfRes.ok) throw new Error("Erreur lors de la génération du PDF");
     const { pdfPath, absolutePath, bonLivraisonPath, procesVerbalPath } = await pdfRes.json();
 
-    console.log("✅ Chemins PDF :", { pdfPath, absolutePath, bonLivraisonPath, procesVerbalPath });
-
     // Étape 3 : Mettre à jour la visite avec les chemins PDF
     await fetch(`${API}/visites/${newVisite.id}`, {
       method: "PUT",
