@@ -87,6 +87,8 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
     fetchMainPDF();
   }, [visite]);
 
+  const buildURL = (path) => `${API.replace(/\/$/, "")}/${path.replace(/^\//, "")}`;
+
   return (
     <div className="client-detail-wrapper">
       <div className="client-detail-container dark:bg-[#121417] dark:border-0 ">
@@ -163,17 +165,17 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
           <div className="mt-6 space-y-2">
             {visite.pdfPath ? (
               <a
-                href={`${API.replace(/\/$/, "")}/${visite.pdfPath.replace(/^\//, "")}`}
+                href={buildURL(visite.pdfPath)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block text-center bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded"
               >
                 📄 Voir / Télécharger le PDF
               </a>
-
             ) : (
               <p className="text-gray-400 italic">Aucun PDF disponible</p>
             )}
+
             {user.role === "Technique" && (
               <>
                 <button
