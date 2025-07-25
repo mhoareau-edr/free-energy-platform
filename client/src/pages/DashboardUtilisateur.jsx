@@ -233,6 +233,12 @@ export default function DashboardUtilisateur({ user, onLogout }) {
     const { pdfPath, absolutePath, bonLivraisonPath, procesVerbalPath } = await pdfRes.json();
 
     toast.success("Visite Technique demandée !");
+    console.log("🧾 Chemins PDF envoyés au backend :", {
+      absolutePath,
+      bonLivraisonPath,
+      procesVerbalPath
+    });
+
 
     const res = await fetch(`${API}/visites`, {
       method: "POST",
