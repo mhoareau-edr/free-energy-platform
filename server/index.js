@@ -30,13 +30,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, "uploads");
 const connectedUsers = new Map();
-const DOCS_DIR = process.env.UPLOADS_DIR
-  ? path.join(process.env.UPLOADS_DIR, "..", "docs")
-  : path.join(__dirname, "docs");
 
-const PDF_DIR = process.env.UPLOADS_DIR
-  ? path.join(process.env.UPLOADS_DIR, "..", "pdf")
-  : path.join(__dirname, "pdf");
+const DOCS_DIR = path.join(UPLOADS_DIR, "docs");
+const PDF_DIR = path.join(UPLOADS_DIR, "pdf");
 
 app.use(cors());
 app.use(express.json());

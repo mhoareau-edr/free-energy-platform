@@ -8,13 +8,12 @@ import multer from "multer";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PDF_DIR = process.env.UPLOADS_DIR
-  ? path.join(process.env.UPLOADS_DIR, "..", "pdf")
+  ? path.join(process.env.UPLOADS_DIR, "pdf") // ✅ autorisé
   : path.join(__dirname, "..", "pdf");
 
 const DOCS_DIR = process.env.UPLOADS_DIR
-  ? path.join(process.env.UPLOADS_DIR, "..", "docs")
+  ? path.join(process.env.UPLOADS_DIR, "docs") // ✅ autorisé
   : path.join(__dirname, "..", "docs");
-
 
 const router = express.Router();
 const upload = multer();
