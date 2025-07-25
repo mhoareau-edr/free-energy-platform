@@ -4,6 +4,13 @@ import toast from "react-hot-toast";
 
 const API = import.meta.env.VITE_API_URL;
 
+const buildURL = (path) => {
+  const cleanedAPI = API.replace(/\/$/, "");
+  const cleanedPath = path.replace(/^\/+/, "");
+  return `${cleanedAPI}/${cleanedPath}`;
+};
+
+
 export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUpdateDocuments }) {
   const [path, setPath] = useState("/");
   const [items, setItems] = useState([]);
@@ -17,6 +24,7 @@ export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUp
   const [showRenameModal, setShowRenameModal] = useState(false);
   const [renameValue, setRenameValue] = useState("");
 
+  
   if (!visiteId) return <p className="text-red-600">❌ Aucun client sélectionné.</p>;
 
   useEffect(() => {
@@ -145,7 +153,8 @@ export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUp
       goToFolder(item.nom);
     } else {
 
-      window.open(`${API}/${item.chemin}`, "_blank");
+      window.open(buildURL(item.chemin), "_blank");
+
     }
   };
 
@@ -182,8 +191,7 @@ export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUp
     if (item.type === "folder") {
       goToFolder(item.nom);
     } else if (item.chemin) {
-      window.open(`${API}/${item.chemin}`, "_blank");
-
+      window.open(buildURL(item.chemin), "_blank");
     }
 
     setContextMenu(null);
@@ -257,17 +265,17 @@ export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUp
   const staticDocs = [
     visite?.pdfPath && {
       nom: "Fiche Visite Technique.pdf",
-      chemin: visite.pdfPath,
+      chemin: buildURL(visite.pdfPath),
       type: "pdf"
     },
     visite?.bonLivraisonPath && {
       nom: "Bon de Livraison.pdf",
-      chemin: visite.bonLivraisonPath,
+      chemin: buildURL(visite.bonLivraisonPath),
       type: "pdf"
     },
     visite?.procesVerbalPath && {
       nom: "Procès-Verbal de Réception.pdf",
-      chemin: visite.procesVerbalPath,
+      chemin: buildURL(visite.procesVerbalPath),
       type: "pdf"
     },
     visite?.permis_de_construire && {

@@ -169,7 +169,6 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
           </div>
 
           <div className="mt-6 space-y-2">
-
             {visite.pdfPath ? (
               <a
                 href={buildURL(visite.pdfPath)}
@@ -386,7 +385,8 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                             <p><strong>✉️ Email :</strong> {visite.mail_interlocuteur || "—"}</p>
                             <p><strong>💡 Type :</strong> {visite.client_b2b ? "BtoB" : visite.client_b2c ? "BtoC" : "Non précisé"}</p>
                             <a
-                              href={`${API}/${visite.pdfPath}`}
+  href={buildURL(visite.pdfPath)}
+
                               target="_blank"
                               rel="noopener noreferrer"
                               className="block w-full text-center bg-red-600 hover:bg-red-700 text-white py-2 rounded font-semibold"
@@ -871,7 +871,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                             <p><strong>✉️ Email :</strong> {visite.mail_interlocuteur || "—"}</p>
                             <p><strong>💡 Type :</strong> {visite.client_b2b ? "BtoB" : visite.client_b2c ? "BtoC" : "Non précisé"}</p>
                             <a
-                              href={`${API}/${visite.pdfPath}`}
+                              href={buildURL(visite.pdfPath)}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="block w-full text-center bg-red-600 hover:bg-red-700 text-white py-2 rounded font-semibold"
