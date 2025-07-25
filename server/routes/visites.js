@@ -125,8 +125,14 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+function normalizeFolderName(name) {
+  return name
+    .normalize("NFD")                     // décompose les caractères accentués
+    .replace(/[\u0300-\u036f]/g, "")     // enlève les accents
+    .replace(/\s+/g, "_");               // remplace espaces par "_"
+}
 
-/* CREATE VISITE */
+
 router.post("/", async (req, res) => {
   const {
     client,
@@ -175,7 +181,7 @@ router.post("/", async (req, res) => {
 
     const dossierBase = path.join(UPLOADS_DIR, `visite-${newVisite.id}`);
 
-    const dossiers = [
+    const rawDossiers = [
       "1. Pièces Administratives",
       "2. Déclaration admin",
       "2. Déclaration admin/1. Mairie",
@@ -187,6 +193,14 @@ router.post("/", async (req, res) => {
       "5. Photos"
     ];
 
+    const dossiers = rawDossiers.map(path => {
+      return path
+        .split("/")
+        .map(normalizeFolderName)
+        .join("/");
+    });
+
+
     dossiers.forEach((relativePath) => {
       const fullPath = path.join(dossierBase, relativePath);
       if (!fs.existsSync(fullPath)) {
@@ -194,16 +208,18 @@ router.post("/", async (req, res) => {
       }
     });
 
-    const basePath = path.join("uploads", `visite-${newVisite.id}`, "1. Pièces Administratives");
+    const dossierNom = normalizeFolderName("1. Pièces Administratives");
+
+    const basePath = path.join("uploads", `visite-${newVisite.id}`, dossierNom);
 
     const newBonPath = path.join(basePath, "Bon_de_livraison.pdf").replace(/\\/g, "/");
     const newPdfPath = path.join(basePath, "Fiche_Visite_Technique.pdf").replace(/\\/g, "/");
     const newProcesPath = path.join(basePath, "Proces_Verbal_Reception.pdf").replace(/\\/g, "/");
 
     // 📁 Emplacement final dans le dossier de la visite
-    const pdfFinalPath = path.join(UPLOADS_DIR, `visite-${newVisite.id}`, "1. Pièces Administratives", "Fiche_Visite_Technique.pdf");
-    const bonFinalPath = path.join(UPLOADS_DIR, `visite-${newVisite.id}`, "1. Pièces Administratives", "Bon_de_livraison.pdf");
-    const procesFinalPath = path.join(UPLOADS_DIR, `visite-${newVisite.id}`, "1. Pièces Administratives", "Proces_Verbal_Reception.pdf");
+    const pdfFinalPath = path.join(UPLOADS_DIR, `visite-${newVisite.id}`, dossierNom, "Fiche_Visite_Technique.pdf");
+    const bonFinalPath = path.join(UPLOADS_DIR, `visite-${newVisite.id}`, dossierNom, "Bon_de_livraison.pdf");
+    const procesFinalPath = path.join(UPLOADS_DIR, `visite-${newVisite.id}`, dossierNom, "Proces_Verbal_Reception.pdf");
 
     // ✅ Utilise les chemins absolus reçus du frontend
     if (req.body.absolutePath && fs.existsSync(req.body.absolutePath)) {
@@ -225,30 +241,31 @@ router.post("/", async (req, res) => {
     
 
     await prisma.document.createMany({
-      data: [
-        {
-          nom: "Fiche_Visite_Technique.pdf",
-          type: "pdf",
-          chemin: path.join("uploads", `visite-${newVisite.id}`, "1. Pièces Administratives", "Fiche_Visite_Technique.pdf").replace(/\\/g, "/"),
-          path: "/1. Pièces Administratives",
-          visiteId: newVisite.id
-        },
-        {
-          nom: "Bon_de_livraison.pdf",
-          type: "pdf",
-          chemin: path.join("uploads", `visite-${newVisite.id}`, "1. Pièces Administratives", "Bon_de_livraison.pdf").replace(/\\/g, "/"),
-          path: "/1. Pièces Administratives",
-          visiteId: newVisite.id
-        },
-        {
-          nom: "Proces_Verbal_Reception.pdf",
-          type: "pdf",
-          chemin: path.join("uploads", `visite-${newVisite.id}`, "1. Pièces Administratives", "Proces_Verbal_Reception.pdf").replace(/\\/g, "/"),
-          path: "/1. Pièces Administratives",
-          visiteId: newVisite.id
-        }
-      ]
-    });
+  data: [
+    {
+      nom: "Fiche_Visite_Technique.pdf",
+      type: "pdf",
+      chemin: path.join("uploads", `visite-${newVisite.id}`, dossierNom, "Fiche_Visite_Technique.pdf").replace(/\\/g, "/"),
+      path: `/${dossierNom}`,
+      visiteId: newVisite.id
+    },
+    {
+      nom: "Bon_de_livraison.pdf",
+      type: "pdf",
+      chemin: path.join("uploads", `visite-${newVisite.id}`, dossierNom, "Bon_de_livraison.pdf").replace(/\\/g, "/"),
+      path: `/${dossierNom}`,
+      visiteId: newVisite.id
+    },
+    {
+      nom: "Proces_Verbal_Reception.pdf",
+      type: "pdf",
+      chemin: path.join("uploads", `visite-${newVisite.id}`, dossierNom, "Proces_Verbal_Reception.pdf").replace(/\\/g, "/"),
+      path: `/${dossierNom}`,
+      visiteId: newVisite.id
+    }
+  ]
+});
+
 
     console.log("✅ Dossiers créés pour la visite :", dossierBase);
 
