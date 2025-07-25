@@ -242,9 +242,9 @@ export default function DashboardUtilisateur({ user, onLogout }) {
         adresse,
         demandeur: user.name,
         pdfPath,
-        absolutePath, // <-- 🔥 ajouté
-        bonLivraisonPath, // <-- 🔥 ajouté
-        procesVerbalPath, // <-- 🔥 ajouté
+        absolutePath,
+        bonLivraisonPath,
+        procesVerbalPath,
         details,
         user: user.name,
         type_abonnement: details.type_abonnement,
