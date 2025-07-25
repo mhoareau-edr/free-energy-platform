@@ -539,7 +539,14 @@ console.log("📨 fetch /visites en cours...");
                 <textarea className="form-input mt-4 w-full  dark:bg-[#1d2125] dark:border-[#363b41]" rows={3} placeholder="Commentaires techniques (facultatif)" value={details.commentaires_technique} onChange={e => setDetails({ ...details, commentaires_technique: e.target.value })} />
               </div>
 
-              <button onClick={() => demanderVT({ id: "temp" })} className="primary-button w-full mt-4" disabled={loading}></button>
+              <button
+                onClick={() => demanderVT({ id: "temp" })}
+                className="primary-button w-full mt-4"
+                disabled={loading}
+              >
+                {loading ? "Envoi en cours..." : "Envoyer la demande"}
+              </button>
+
 
             </div>
           </div>
