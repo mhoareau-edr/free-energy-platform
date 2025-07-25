@@ -170,22 +170,19 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
           </div>
 
           <div className="mt-6 space-y-2">
-            {visite.pdfPath ? (
+            {fichePDFUrl ? (
               <a
-                href={buildURL(visite.pdfPath)}
+                href={fichePDFUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block text-center bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded"
-
               >
                 📄 Voir / Télécharger le PDF
-
               </a>
-
-
             ) : (
               <p className="text-gray-400 italic">Aucun PDF disponible</p>
             )}
+
 
             {user.role === "Technique" && (
               <>
