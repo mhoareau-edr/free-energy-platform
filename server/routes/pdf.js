@@ -7,6 +7,14 @@ import multer from "multer";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const PDF_DIR = process.env.UPLOADS_DIR
+  ? path.join(process.env.UPLOADS_DIR, "..", "pdf")
+  : path.join(__dirname, "..", "pdf");
+
+const DOCS_DIR = process.env.UPLOADS_DIR
+  ? path.join(process.env.UPLOADS_DIR, "..", "docs")
+  : path.join(__dirname, "..", "docs");
+
 
 const router = express.Router();
 const upload = multer();
@@ -158,20 +166,20 @@ router.post("/generate-pdf", upload.any(), async (req, res) => {
 
     form.flatten();
 
-    const docsDir = path.join(__dirname, "..", "docs");
+    const docsDir = DOCS_DIR;
     if (!fs.existsSync(docsDir)) {
       fs.mkdirSync(docsDir);
     }
+    if (!fs.existsSync(PDF_DIR)) fs.mkdirSync(PDF_DIR, { recursive: true });
 
     const pdfBytesUpdated = await pdfDoc.save();
 
     const fileName = `vt-${data.id || "temp"}.pdf`;
 
     const outputPath = data.outputPath
-      ? path.join(__dirname, "..", data.outputPath)
-      : path.join(__dirname, "..", "pdf", fileName);
+    ? path.join("/mnt/data", data.outputPath) // si data.outputPath est relatif
+    : path.join(PDF_DIR, fileName);
     fs.writeFileSync(outputPath, pdfBytesUpdated);
-
 
     let permisFilePath = null;
 
@@ -203,7 +211,7 @@ router.post("/generate-pdf", upload.any(), async (req, res) => {
 
       form.flatten();
 
-      const filePath = path.join(__dirname, "..", "pdf", outputName);
+      const filePath = path.join(PDF_DIR, outputName);
       fs.writeFileSync(filePath, await pdfDoc.save());
 
       return `pdf/${outputName}`;

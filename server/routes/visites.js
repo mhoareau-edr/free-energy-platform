@@ -9,9 +9,10 @@ const router = express.Router();
 const prisma = new PrismaClient();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, "..", "uploads");
 const storagePhotos = multer.diskStorage({
   destination: function (req, file, cb) {
-    const folderPath = path.join(__dirname, "..", "photos");
+    const folderPath = path.join("/mnt/data", "photos");
     if (!fs.existsSync(folderPath)) {
       fs.mkdirSync(folderPath, { recursive: true });
     }
@@ -27,7 +28,7 @@ const uploadPhotos = multer({ storage: storagePhotos });
 
 const storageDocuments = multer.diskStorage({
   destination: function (req, file, cb) {
-    const tempFolder = path.join(__dirname, "..", "temp_uploads");
+    const tempFolder = path.join("/mnt/data", "temp_uploads");
     if (!fs.existsSync(tempFolder)) fs.mkdirSync(tempFolder, { recursive: true });
     cb(null, tempFolder);
   },
@@ -48,7 +49,7 @@ const uploadDoc = multer({
       return cb(null, true);
     }
 
-    const basePath = path.join(__dirname, "..", "uploads", `visite-${visiteId}`);
+    const basePath = path.join(UPLOADS_DIR, `visite-${visiteId}`);
     const filePath = path.join(basePath, file.originalname);
 
     cb(null, true);
@@ -172,7 +173,7 @@ router.post("/", async (req, res) => {
       }
     });
 
-    const dossierBase = path.join(__dirname, "..", "uploads", `visite-${newVisite.id}`);
+    const dossierBase = path.join(UPLOADS_DIR, `visite-${newVisite.id}`);
 
     const dossiers = [
       "1. Pièces Administratives",
@@ -200,9 +201,9 @@ router.post("/", async (req, res) => {
     const newProcesPath = path.join(basePath, "Proces_Verbal_Reception.pdf").replace(/\\/g, "/");
 
 
-    fs.renameSync(pdfPath, path.join(__dirname, "..", newPdfPath));
-    fs.renameSync(bonLivraisonPath, path.join(__dirname, "..", newBonPath));
-    fs.renameSync(procesVerbalPath, path.join(__dirname, "..", newProcesPath));
+    fs.renameSync(pdfPath, path.join(UPLOADS_DIR, `visite-${newVisite.id}`, "1. Pièces Administratives", "Fiche_Visite_Technique.pdf"));
+    fs.renameSync(bonLivraisonPath, path.join(UPLOADS_DIR, `visite-${newVisite.id}`, "1. Pièces Administratives", "Bon_de_livraison.pdf"));
+    fs.renameSync(procesVerbalPath, path.join(UPLOADS_DIR, `visite-${newVisite.id}`, "1. Pièces Administratives", "Proces_Verbal_Reception.pdf"));
 
     console.log("📎 Chemins PDF:", { newPdfPath, newBonPath, newProcesPath });
 
@@ -520,7 +521,7 @@ router.post("/:id/photos", uploadPhotos.array("photos"), async (req, res) => {
   const { user } = req.body;
   const photoPaths = req.files.map(f => `photos/${f.filename}`);
 
-  const livraisonFolder = path.join(__dirname, "..", "uploads", `visite-${id}`, "4. Livraison", "Photos");
+  const livraisonFolder = path.join(UPLOADS_DIR, `visite-${id}`, "4. Livraison", "Photos");
   if (!fs.existsSync(livraisonFolder)) {
     fs.mkdirSync(livraisonFolder, { recursive: true });
   }
@@ -604,7 +605,7 @@ router.post("/:id/documents", uploadDoc.single("file"), async (req, res) => {
   console.log("➡️  Destination finale : ", chemin);
 
   const tempPath = req.file.path; // Fichier temporaire
-const absPath = path.join(__dirname, "..", chemin); // Chemin final
+  const absPath = path.join("/mnt/data", chemin);
 
 // Créer le dossier cible si nécessaire
 const destinationFolder = path.dirname(absPath);
@@ -625,7 +626,7 @@ fs.renameSync(tempPath, absPath);
           : "autre";
 
   try {
-    const wrongPath = path.join(__dirname, "..", "uploads", `visite-${id}`, nomFinal);
+    const wrongPath = path.join(UPLOADS_DIR, `visite-${id}`, nomFinal);
     if (fs.existsSync(wrongPath)) {
       fs.unlinkSync(wrongPath);
     }
@@ -658,7 +659,7 @@ fs.renameSync(tempPath, absPath);
 router.get("/:id/documents", async (req, res) => {
   const { id } = req.params;
   const subpath = req.query.path || "/";
-  const basePath = path.join(__dirname, "..", "uploads", `visite-${id}`, subpath);
+  const basePath = path.join(UPLOADS_DIR, `visite-${id}`, subpath);
 
   try {
     const docsInDB = await prisma.document.findMany({
@@ -708,7 +709,7 @@ function getFileType(filename) {
 
 router.get("/:id/documents/all-recursive", async (req, res) => {
   const { id } = req.params;
-  const baseFolder = path.join(__dirname, "..", "uploads", `visite-${id}`);
+  const baseFolder = path.join(UPLOADS_DIR, `visite-${id}`);
 
   function readRecursive(dir, base = "") {
     let results = [];
@@ -737,7 +738,7 @@ router.get("/:id/documents/all-recursive", async (req, res) => {
 
 router.get("/:id/documents/full-tree", async (req, res) => {
   const { id } = req.params;
-  const baseFolder = path.join(__dirname, "..", "uploads", `visite-${id}`);
+  const baseFolder = path.join(UPLOADS_DIR, `visite-${id}`);
 
   function listRecursive(dir, relative = "") {
     let results = [];
@@ -775,7 +776,7 @@ router.delete("/:id/documents", async (req, res) => {
   const { chemin } = req.body;
 
   try {
-    const fullPath = path.join(__dirname, "..", chemin);
+    const fullPath = path.join("/mnt/data", chemin);
     if (fs.existsSync(fullPath)) {
       const stats = fs.statSync(fullPath);
 
@@ -801,8 +802,8 @@ router.put("/:id/documents/move", async (req, res) => {
   const { id } = req.params;
   const { oldPath, newFolder, nom } = req.body;
 
-  const oldAbs = path.join(__dirname, "..", oldPath);
-  const newAbs = path.join(__dirname, "..", "uploads", `visite-${id}`, newFolder, nom);
+  const oldAbs = path.join("/mnt/data", oldPath);
+  const newAbs = path.join(UPLOADS_DIR, `visite-${id}`, newFolder, nom);
 
   try {
     fs.renameSync(oldAbs, newAbs);
@@ -826,7 +827,7 @@ router.post("/:id/documents/folder", async (req, res) => {
   const { id } = req.params;
   const { path, name } = req.body;
   const pathModule = await import("path");
-  const fullPath = pathModule.join(__dirname, "..", "uploads", `visite-${id}`, path, name);
+  const fullPath = pathModule.join(UPLOADS_DIR, `visite-${id}`, path, name);
 
   try {
     fs.mkdirSync(fullPath, { recursive: true });
@@ -846,10 +847,10 @@ router.put("/:id/documents/rename", async (req, res) => {
     return res.status(400).json({ error: "Chemin ou nouveau nom manquant" });
   }
 
-  const oldAbs = path.join(__dirname, "..", oldPath);
+  const oldAbs = path.join("/mnt/data", oldPath);
   const dirPath = path.dirname(oldAbs);
   const newAbs = path.join(dirPath, newName);
-  const newChemin = `uploads/visite-${id}/${path.relative(path.join(__dirname, "..", "uploads", `visite-${id}`), newAbs)}`;
+  const newChemin = `uploads/visite-${id}/${path.relative(path.join(UPLOADS_DIR, `visite-${id}`), newAbs)}`;
 
   try {
     if (!fs.existsSync(oldAbs)) {
