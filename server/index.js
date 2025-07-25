@@ -37,7 +37,7 @@ const PDF_DIR = path.join(UPLOADS_DIR, "pdf");
 app.use(cors());
 app.use(express.json());
 app.use("/pdf", express.static(PDF_DIR));
-app.use("/uploads", express.static(UPLOADS_DIR));
+app.use("/uploads", express.static("/mnt/data/uploads"));
 app.use("/docs", express.static(DOCS_DIR));
 app.use('/photos', express.static(path.join(__dirname, 'photos')));
 app.use('/users', userRoutes);
