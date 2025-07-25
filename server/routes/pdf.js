@@ -158,20 +158,18 @@ router.post("/generate-pdf", upload.any(), async (req, res) => {
 
     form.flatten();
 
-    const docsDir = path.join("/mnt/data/docs");
-      if (!fs.existsSync(docsDir)) {
-        fs.mkdirSync(docsDir, { recursive: true });
-      }
-
+    const docsDir = path.join(__dirname, "..", "docs");
+    if (!fs.existsSync(docsDir)) {
+      fs.mkdirSync(docsDir);
+    }
 
     const pdfBytesUpdated = await pdfDoc.save();
 
     const fileName = `vt-${data.id || "temp"}.pdf`;
 
     const outputPath = data.outputPath
-      ? path.join("/mnt/data", data.outputPath)
-      : path.join("/mnt/data/pdf", fileName);
-
+      ? path.join(__dirname, "..", data.outputPath)
+      : path.join(__dirname, "..", "pdf", fileName);
     fs.writeFileSync(outputPath, pdfBytesUpdated);
 
 
@@ -182,7 +180,7 @@ router.post("/generate-pdf", upload.any(), async (req, res) => {
       if (permisFile) {
         const extension = path.extname(permisFile.originalname);
         const permisFileName = `permis_${Date.now()}${extension}`;
-        const fullPath = path.join("/mnt/data/docs", permisFileName);
+        const fullPath = path.join(docsDir, permisFileName);
         fs.writeFileSync(fullPath, permisFile.buffer);
         permisFilePath = `docs/${permisFileName}`;
       }
@@ -205,7 +203,7 @@ router.post("/generate-pdf", upload.any(), async (req, res) => {
 
       form.flatten();
 
-      const filePath = path.join("/mnt/data/pdf", outputName);
+      const filePath = path.join(__dirname, "..", "pdf", outputName);
       fs.writeFileSync(filePath, await pdfDoc.save());
 
       return `pdf/${outputName}`;

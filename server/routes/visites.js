@@ -4,17 +4,6 @@ import path from "path";
 import { PrismaClient } from "@prisma/client";
 import { fileURLToPath } from "url";
 import fs from "fs";
-const upload = multer();
-
-const uploadDir = "/mnt/data/uploads";
-const photosDir = "/mnt/data/photos";
-const docsDir = "/mnt/data/docs";
-
-[uploadDir, photosDir, docsDir].forEach((dir) => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-});
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -22,7 +11,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const storagePhotos = multer.diskStorage({
   destination: function (req, file, cb) {
-    const folderPath = photosDir;
+    const folderPath = path.join(__dirname, "..", "photos");
     if (!fs.existsSync(folderPath)) {
       fs.mkdirSync(folderPath, { recursive: true });
     }
@@ -47,6 +36,8 @@ const storageDocuments = multer.diskStorage({
   }
 });
 
+
+
 const uploadDoc = multer({
   storage: storageDocuments,
   fileFilter: function (req, file, cb) {
@@ -57,7 +48,7 @@ const uploadDoc = multer({
       return cb(null, true);
     }
 
-    const basePath = path.join(uploadDir, `visite-${id}`, subpath);
+    const basePath = path.join(__dirname, "..", "uploads", `visite-${visiteId}`);
     const filePath = path.join(basePath, file.originalname);
 
     cb(null, true);
@@ -133,36 +124,6 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.post("/upload", upload.single("file"), async (req, res) => {
-  try {
-    const file = req.file;
-    const { type } = req.body;
-
-    if (!file) return res.status(400).json({ error: "Aucun fichier envoyé" });
-
-    const fileName = `${Date.now()}_${file.originalname}`;
-    let targetPath = "";
-
-    switch (type) {
-      case "photo":
-        targetPath = path.join(photosDir, fileName);
-        break;
-      case "doc":
-        targetPath = path.join(docsDir, fileName);
-        break;
-      default:
-        targetPath = path.join(uploadDir, fileName);
-    }
-
-    fs.writeFileSync(targetPath, file.buffer);
-    res.status(200).json({ path: `${type === "photo" ? "photos" : type === "doc" ? "docs" : "uploads"}/${fileName}` });
-  } catch (err) {
-    console.error("Erreur upload fichier:", err);
-    res.status(500).json({ error: "Erreur lors de l'upload" });
-  }
-});
-
-
 
 /* CREATE VISITE */
 router.post("/", async (req, res) => {
@@ -211,7 +172,7 @@ router.post("/", async (req, res) => {
       }
     });
 
-    const dossierBase = path.join(uploadDir, `visite-${newVisite.id}`);
+    const dossierBase = path.join(__dirname, "..", "uploads", `visite-${newVisite.id}`);
 
     const dossiers = [
       "1. Pièces Administratives",
@@ -232,23 +193,16 @@ router.post("/", async (req, res) => {
       }
     });
 
-    const basePath = path.join(`visite-${newVisite.id}`, "1. Pièces Administratives");
-
+    const basePath = path.join("uploads", `visite-${newVisite.id}`, "1. Pièces Administratives");
 
     const newBonPath = path.join(basePath, "Bon_de_livraison.pdf").replace(/\\/g, "/");
     const newPdfPath = path.join(basePath, "Fiche_Visite_Technique.pdf").replace(/\\/g, "/");
     const newProcesPath = path.join(basePath, "Proces_Verbal_Reception.pdf").replace(/\\/g, "/");
-    const baseFolder = path.join(uploadDir, `visite-${newVisite.id}`);
 
 
-    fs.copyFileSync(pdfPath, path.join(uploadDir, newPdfPath));
-fs.unlinkSync(pdfPath);
-
-fs.copyFileSync(bonLivraisonPath, path.join(uploadDir, newBonPath));
-fs.unlinkSync(bonLivraisonPath);
-
-fs.copyFileSync(procesVerbalPath, path.join(uploadDir, newProcesPath));
-fs.unlinkSync(procesVerbalPath);
+    fs.renameSync(pdfPath, path.join(__dirname, "..", newPdfPath));
+    fs.renameSync(bonLivraisonPath, path.join(__dirname, "..", newBonPath));
+    fs.renameSync(procesVerbalPath, path.join(__dirname, "..", newProcesPath));
 
     console.log("📎 Chemins PDF:", { newPdfPath, newBonPath, newProcesPath });
 
@@ -342,44 +296,6 @@ router.delete("/:id", async (req, res) => {
     console.error("Erreur suppression visite :", error);
     res.status(500).json({ error: "Erreur lors de la suppression de la visite." });
 
-  }
-});
-
-router.put("/visites/:id", upload.any(), async (req, res) => {
-  try {
-    const id = parseInt(req.params.id);
-    const body = req.body;
-    const files = req.files;
-
-    const visite = await prisma.visite.findUnique({ where: { id } });
-    if (!visite) return res.status(404).json({ error: "Visite introuvable" });
-
-    let newPhotos = [];
-
-    for (const file of files) {
-      if (file.fieldname === "photo") {
-        const fileName = `${Date.now()}_${file.originalname}`;
-        const photoPath = path.join(photosDir, fileName);
-        fs.writeFileSync(photoPath, file.buffer);
-        newPhotos.push(`photos/${fileName}`);
-      }
-    }
-
-    const updated = await prisma.visite.update({
-      where: { id },
-      data: {
-        Date2: body.Date2 || undefined,
-        Commentaire2: body.Commentaire2 || undefined,
-        photos: {
-          set: [...(visite.photos || []), ...newPhotos],
-        },
-      },
-    });
-
-    res.status(200).json(updated);
-  } catch (err) {
-    console.error("Erreur MAJ visite :", err);
-    res.status(500).json({ error: "Erreur mise à jour de la visite" });
   }
 });
 
@@ -604,8 +520,7 @@ router.post("/:id/photos", uploadPhotos.array("photos"), async (req, res) => {
   const { user } = req.body;
   const photoPaths = req.files.map(f => `photos/${f.filename}`);
 
-  const livraisonFolder = path.join(uploadDir, `visite-${id}`, "4. Livraison", "Photos");
-
+  const livraisonFolder = path.join(__dirname, "..", "uploads", `visite-${id}`, "4. Livraison", "Photos");
   if (!fs.existsSync(livraisonFolder)) {
     fs.mkdirSync(livraisonFolder, { recursive: true });
   }
@@ -689,7 +604,7 @@ router.post("/:id/documents", uploadDoc.single("file"), async (req, res) => {
   console.log("➡️  Destination finale : ", chemin);
 
   const tempPath = req.file.path; // Fichier temporaire
-  const absPath = path.join(uploadDir, `visite-${id}`, cleanSubpath, nomFinal);
+const absPath = path.join(__dirname, "..", chemin); // Chemin final
 
 // Créer le dossier cible si nécessaire
 const destinationFolder = path.dirname(absPath);
@@ -710,6 +625,10 @@ fs.renameSync(tempPath, absPath);
           : "autre";
 
   try {
+    const wrongPath = path.join(__dirname, "..", "uploads", `visite-${id}`, nomFinal);
+    if (fs.existsSync(wrongPath)) {
+      fs.unlinkSync(wrongPath);
+    }
 
     await prisma.document.deleteMany({
       where: {
@@ -739,7 +658,7 @@ fs.renameSync(tempPath, absPath);
 router.get("/:id/documents", async (req, res) => {
   const { id } = req.params;
   const subpath = req.query.path || "/";
-  const basePath = path.join(uploadDir, `visite-${id}`, subpath);
+  const basePath = path.join(__dirname, "..", "uploads", `visite-${id}`, subpath);
 
   try {
     const docsInDB = await prisma.document.findMany({
@@ -789,9 +708,7 @@ function getFileType(filename) {
 
 router.get("/:id/documents/all-recursive", async (req, res) => {
   const { id } = req.params;
-  const subpath = req.query.path || "/";
-
-  const baseFolder = path.join(uploadDir, `visite-${id}`, subpath);
+  const baseFolder = path.join(__dirname, "..", "uploads", `visite-${id}`);
 
   function readRecursive(dir, base = "") {
     let results = [];
@@ -820,8 +737,7 @@ router.get("/:id/documents/all-recursive", async (req, res) => {
 
 router.get("/:id/documents/full-tree", async (req, res) => {
   const { id } = req.params;
-  const subpath = req.query.path || "/";
-  const baseFolder = path.join(uploadDir, `visite-${id}`, subpath);
+  const baseFolder = path.join(__dirname, "..", "uploads", `visite-${id}`);
 
   function listRecursive(dir, relative = "") {
     let results = [];
@@ -859,7 +775,7 @@ router.delete("/:id/documents", async (req, res) => {
   const { chemin } = req.body;
 
   try {
-    const fullPath = path.join("/mnt/data", chemin);
+    const fullPath = path.join(__dirname, "..", chemin);
     if (fs.existsSync(fullPath)) {
       const stats = fs.statSync(fullPath);
 
@@ -885,8 +801,8 @@ router.put("/:id/documents/move", async (req, res) => {
   const { id } = req.params;
   const { oldPath, newFolder, nom } = req.body;
 
-  const oldAbs = path.join(uploadDir, `visite-${id}`, oldPath);
-  const newAbs = path.join(uploadDir, `visite-${id}`, newFolder);
+  const oldAbs = path.join(__dirname, "..", oldPath);
+  const newAbs = path.join(__dirname, "..", "uploads", `visite-${id}`, newFolder, nom);
 
   try {
     fs.renameSync(oldAbs, newAbs);
@@ -910,7 +826,7 @@ router.post("/:id/documents/folder", async (req, res) => {
   const { id } = req.params;
   const { path, name } = req.body;
   const pathModule = await import("path");
-  const fullPath = path.join(uploadDir, `visite-${id}`, subpath);
+  const fullPath = pathModule.join(__dirname, "..", "uploads", `visite-${id}`, path, name);
 
   try {
     fs.mkdirSync(fullPath, { recursive: true });
@@ -933,7 +849,7 @@ router.put("/:id/documents/rename", async (req, res) => {
   const oldAbs = path.join(__dirname, "..", oldPath);
   const dirPath = path.dirname(oldAbs);
   const newAbs = path.join(dirPath, newName);
-  const newChemin = `uploads/visite-${id}/${path.relative(path.join(uploadDir, `visite-${id}`), subpath)}`;
+  const newChemin = `uploads/visite-${id}/${path.relative(path.join(__dirname, "..", "uploads", `visite-${id}`), newAbs)}`;
 
   try {
     if (!fs.existsSync(oldAbs)) {

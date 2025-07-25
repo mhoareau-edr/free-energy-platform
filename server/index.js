@@ -13,23 +13,8 @@ import { fileURLToPath } from 'url';
 import { Server } from 'socket.io';
 import http from 'http';
 import serveStatic from 'serve-static';
-import fs from 'fs';
 
 dotenv.config();
-
-const persistentDirs = [
-  "/mnt/data/uploads",
-  "/mnt/data/pdf",
-  "/mnt/data/docs",
-  "/mnt/data/photos",
-];
-
-persistentDirs.forEach((dir) => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-    console.log("📁 Dossier créé :", dir);
-  }
-});
 
 const app = express();
 const server = http.createServer(app);
@@ -47,10 +32,10 @@ const connectedUsers = new Map();
 
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static('/mnt/data/uploads'));
-app.use('/pdf', express.static('/mnt/data/pdf'));
-app.use('/docs', express.static('/mnt/data/docs'));
-app.use('/photos', express.static('/mnt/data/photos'));
+app.use('/pdf', express.static(path.join(__dirname, 'pdf')));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/docs", express.static(path.join(__dirname, "docs")));
+app.use('/photos', express.static(path.join(__dirname, 'photos')));
 app.use('/users', userRoutes);
 app.use('/history', historyRoutes);
 app.use('/visites', visitesRoutes);
