@@ -71,28 +71,29 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
     Object.assign(visite, updated);
   };
 
-  useEffect(() => {
-    const fetchMainPDF = async () => {
-      const res = await fetch(`${API}/visites/${visite.id}/documents?path=/1. Pièces Administratives`);
-      const docs = await res.json();
-      const fichePDF = docs.find(d =>
-        d.nom === "Fiche Visite Technique" || d.nom === "Fiche_Visite_Technique.pdf"
-      );
-
-      if (fichePDF) {
-        setFichePDFUrl(`${API}/${fichePDF.chemin}`);
-      }
-    };
-
-    fetchMainPDF();
-  }, [visite]);
-
-
   const buildURL = (path) => {
     const cleanedAPI = API.replace(/\/$/, ""); // supprime le slash final si présent
     const cleanedPath = path.replace(/^\/+/, "");
     return `${cleanedAPI}/${cleanedPath}`;
   };
+
+  useEffect(() => {
+  const fetchMainPDF = async () => {
+    const res = await fetch(`${API}/visites/${visite.id}/documents?path=/1. Pièces Administratives`);
+    const docs = await res.json();
+
+    const fichePDF = docs.find(d => d.nom === "Fiche_Visite_Technique.pdf");
+
+    if (fichePDF) {
+      console.log("📄 Fiche PDF trouvée :", fichePDF);
+      setFichePDFUrl(buildURL(fichePDF.chemin));
+    } else {
+      console.warn("❌ Aucun fichier PDF de visite technique trouvé");
+    }
+  };
+
+  fetchMainPDF();
+}, [visite]);
 
 
   return (
