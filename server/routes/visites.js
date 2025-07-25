@@ -4,6 +4,7 @@ import path from "path";
 import { PrismaClient } from "@prisma/client";
 import { fileURLToPath } from "url";
 import fs from "fs";
+const upload = multer();
 
 const uploadDir = "/mnt/data/uploads";
 const photosDir = "/mnt/data/photos";
