@@ -34,6 +34,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
   const duration = moment.duration(end.diff(start));
 
   const API = import.meta.env.VITE_API_URL;
+  console.log("🔗 API URL :", API);
 
   const months = Math.floor(duration.asMonths());
   const days = duration.subtract(months, 'months').days();
@@ -170,11 +171,8 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                 📄 Voir / Télécharger le PDF
               </a>
             ) : (
-              <p className="text-sm italic text-gray-400">Aucun PDF disponible</p>
+              <p className="text-gray-400 italic">Aucun PDF disponible</p>
             )}
-
-
-
             {user.role === "Technique" && (
               <>
                 <button
