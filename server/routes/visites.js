@@ -222,6 +222,7 @@ router.post("/", async (req, res) => {
     }
 
     console.log("📎 Chemins PDF:", { pdfFinalPath, bonFinalPath, procesFinalPath });
+    
 
     await prisma.document.createMany({
       data: [
@@ -248,6 +249,8 @@ router.post("/", async (req, res) => {
         }
       ]
     });
+
+    console.log("✅ Dossiers créés pour la visite :", dossierBase);
 
     await prisma.visite.update({
       where: { id: newVisite.id },
