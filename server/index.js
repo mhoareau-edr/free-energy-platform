@@ -28,18 +28,13 @@ const PORT = process.env.PORT || 5000;
 const prisma = new PrismaClient();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, "uploads");
 const connectedUsers = new Map();
-
-const DOCS_DIR = path.join(UPLOADS_DIR, "docs");
-const PDF_DIR = path.join(UPLOADS_DIR, "pdf");
 
 app.use(cors());
 app.use(express.json());
-app.use("/pdf", express.static(PDF_DIR));
-app.use("/uploads", express.static(UPLOADS_DIR));
-console.log("✅ Dossier static exposé :", UPLOADS_DIR);
-app.use("/docs", express.static(DOCS_DIR));
+app.use('/pdf', express.static(path.join(__dirname, 'pdf')));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/docs", express.static(path.join(__dirname, "docs")));
 app.use('/photos', express.static(path.join(__dirname, 'photos')));
 app.use('/users', userRoutes);
 app.use('/history', historyRoutes);

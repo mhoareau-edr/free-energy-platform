@@ -192,36 +192,16 @@ export default function DashboardUtilisateur({ user, onLogout }) {
   const dossiersTermines = visites.filter(v => v.etape === "Terminé").length;
   const dateFormatee = new Date().toLocaleDateString("fr-FR");
 
-  const demanderVT = async () => {
+  const demanderVT = async (visite) => {
   setLoading(true);
 
   try {
     const dateFormatee = new Date().toLocaleDateString("fr-FR");
 
-    // Étape 1 : Créer la visite en BDD pour récupérer un ID
-    const createRes = await fetch(`${API}/visites`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        client,
-        adresse,
-        demandeur: user.name,
-        user: user.name,
-        details,
-        type_abonnement: details.type_abonnement,
-        type_comptant: details.type_comptant,
-        client_b2b: details.client_b2b,
-        client_b2c: details.client_b2c
-      })
-    });
-
-    if (!createRes.ok) throw new Error("Erreur lors de la création de la visite");
-    const newVisite = await createRes.json();
-
-    // Étape 2 : Générer les PDF avec l'ID réel
     const payload = {
-      id: newVisite.id,
       nomSite: client,
+      ...visites,
+      id: visite.id,
       date_de_la_demande: dateFormatee,
       puissance_souhaitée: details.puissance_souhaitée,
       adresse_pose: adresse,
@@ -239,11 +219,8 @@ export default function DashboardUtilisateur({ user, onLogout }) {
       non_maintenance: details.non_maintenance,
       type_abonnement: details.type_abonnement,
       type_comptant: details.type_comptant,
-      commentaires_technique: details.commentaires_technique,
-      outputPath: `uploads/visite-${newVisite.id}/1._Pieces_Administratives/Fiche_Visite_Technique.pdf`
+      commentaires_technique: details.commentaires_technique
     };
-
-    console.log("📦 Payload envoyé :", payload);
 
     const pdfRes = await fetch(`${API}/generate-pdf`, {
       method: "POST",
@@ -252,29 +229,33 @@ export default function DashboardUtilisateur({ user, onLogout }) {
     });
 
     if (!pdfRes.ok) throw new Error("Erreur lors de la génération du PDF");
-    const { pdfPath, absolutePath, bonLivraisonPath, procesVerbalPath } = await pdfRes.json();
 
-    // Étape 3 : Mettre à jour la visite avec les chemins PDF
-    await fetch(`${API}/visites/${newVisite.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pdfPath, absolutePath, bonLivraisonPath, procesVerbalPath })
-    });
+    const { pdfPath, bonLivraisonPath, procesVerbalPath } = await pdfRes.json();
+    toast.success("Visite Technique demandée !");
 
-    // Étape 4 : Notification interne
-    await fetch(`${API}/notifications`, {
+    const res = await fetch(`${API}/visites`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        message: `Visite Technique demandée pour ${details.nom_interlocuteur || "un client"}.`,
-        type: "system",
-        target: "Technique",
-        senderId: user.id,
-        senderName: user.name
+        client,
+        adresse,
+        demandeur: user.name,
+        pdfPath,
+        bonLivraisonPath,
+        procesVerbalPath,
+        details,
+        user: user.name,
+        type_abonnement: details.type_abonnement,
+        type_comptant: details.type_comptant,
+        client_b2b: details.client_b2b,
+        client_b2c: details.client_b2c
       })
     });
 
-    toast.success("Visite Technique demandée !");
+    if (!res.ok) throw new Error("Erreur lors de la création de la visite");
+
+    const newVisite = await res.json();
+
     setClient("");
     setAdresse("");
     setDetails({
@@ -298,23 +279,34 @@ export default function DashboardUtilisateur({ user, onLogout }) {
       client_b2c: false
     });
 
+    await fetch(`${API}/notifications`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: `Visite Technique demandée pour ${visite.nom_interlocuteur || "un client"}.`,
+        type: "system",
+        target: "Technique",
+        senderId: user.id,
+        senderName: user.name,
+      }),
+    });
+
     setShowForm(false);
     fetchVisites();
     fetchActivities();
     setSelectedClient(newVisite);
 
   } catch (err) {
-    console.error("❌ Erreur lors de la demande de VT :", err);
+    console.error("Erreur lors de la demande de VT :", err);
     toast.error("Erreur lors de la demande");
   } finally {
-    setLoading(false);
+    setLoading(false); // ✅ On stoppe le chargement quoi qu’il arrive
   }
 };
 
 
-
   return (
-
+    
     <div className="dashboard-container">
       <PatchNotesModal />
       <Header
@@ -535,15 +527,7 @@ export default function DashboardUtilisateur({ user, onLogout }) {
                 <textarea className="form-input mt-4 w-full  dark:bg-[#1d2125] dark:border-[#363b41]" rows={3} placeholder="Commentaires techniques (facultatif)" value={details.commentaires_technique} onChange={e => setDetails({ ...details, commentaires_technique: e.target.value })} />
               </div>
 
-              <button
-                onClick={() => demanderVT({ id: "temp" })}
-                className="primary-button w-full mt-4"
-                disabled={loading}
-              >
-                {loading ? "Envoi en cours..." : "Envoyer la demande"}
-              </button>
-
-
+              <button onClick={demanderVT} className="primary-button w-full mt-4" disabled={loading}>{loading ? "Envoi en cours..." : "Envoyer la demande"}</button>
             </div>
           </div>
         </div>

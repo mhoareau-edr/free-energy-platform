@@ -7,19 +7,29 @@ import multer from "multer";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const PDF_DIR = process.env.UPLOADS_DIR
-  ? path.join(process.env.UPLOADS_DIR, "pdf") // ✅ autorisé
-  : path.join(__dirname, "..", "pdf");
-
-const DOCS_DIR = process.env.UPLOADS_DIR
-  ? path.join(process.env.UPLOADS_DIR, "docs") // ✅ autorisé
-  : path.join(__dirname, "..", "docs");
 
 const router = express.Router();
+const upload = multer();
 
-router.post("/generate-pdf", express.json(), async (req, res) => {
+router.post("/generate-pdf", upload.any(), async (req, res) => {
   try {
-    const data = req.body;
+    let data;
+
+    if (req.headers["content-type"]?.includes("multipart/form-data")) {
+      if (!req.body || !req.body.data) {
+        return res.status(400).json({ error: "'data' manquant dans FormData" });
+      }
+
+      try {
+        data = JSON.parse(req.body.data);
+
+      } catch (err) {
+        console.error("Erreur parsing JSON dans FormData :", err);
+        return res.status(400).json({ error: "Champ 'data' mal formé" });
+      }
+    } else {
+      data = req.body;
+    }
 
     const pdfPathBase = path.join(__dirname, "..", "assets", "formulaire_vt.pdf");
     const pdfBytes = fs.readFileSync(pdfPathBase);
@@ -148,33 +158,19 @@ router.post("/generate-pdf", express.json(), async (req, res) => {
 
     form.flatten();
 
-    const docsDir = DOCS_DIR;
+    const docsDir = path.join(__dirname, "..", "docs");
     if (!fs.existsSync(docsDir)) {
       fs.mkdirSync(docsDir);
     }
-    if (!fs.existsSync(PDF_DIR)) fs.mkdirSync(PDF_DIR, { recursive: true });
 
     const pdfBytesUpdated = await pdfDoc.save();
 
     const fileName = `vt-${data.id || "temp"}.pdf`;
 
     const outputPath = data.outputPath
-    ? path.join("/mnt/data", data.outputPath) // si data.outputPath est relatif
-    : path.join(PDF_DIR, fileName);
-
-    const outputDir = path.dirname(outputPath);
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, { recursive: true });
-    }
-
-    console.log("🧾 Sauvegarde PDF dans :", outputPath);
+      ? path.join(__dirname, "..", data.outputPath)
+      : path.join(__dirname, "..", "pdf", fileName);
     fs.writeFileSync(outputPath, pdfBytesUpdated);
-    console.log("✅ PDF bien écrit à :", outputPath, "Existe :", fs.existsSync(outputPath));
-    console.log("🔢 Données reçues : ", data);
-    if (Array.isArray(data)) {
-      console.error("🚨 ERREUR : Un tableau a été reçu au lieu d’un objet !");
-      return res.status(400).json({ error: "Données mal formatées (tableau reçu au lieu d’un objet)" });
-    }
 
 
     let permisFilePath = null;
@@ -207,7 +203,7 @@ router.post("/generate-pdf", express.json(), async (req, res) => {
 
       form.flatten();
 
-      const filePath = path.join(PDF_DIR, outputName);
+      const filePath = path.join(__dirname, "..", "pdf", outputName);
       fs.writeFileSync(filePath, await pdfDoc.save());
 
       return `pdf/${outputName}`;
@@ -238,21 +234,13 @@ router.post("/generate-pdf", express.json(), async (req, res) => {
       ["technicien_vt", "date_de_la_demande", "nom_interlocuteur", "adresse_pose", "tel_interlocuteur"]
     );
 
-    if (!fs.existsSync(outputPath)) {
-      console.error("❌ ERREUR : absolutePath ne pointe pas vers un fichier existant :", outputPath);
-    }
 
     res.status(200).json({
-    pdfPath: data.outputPath || `pdf/${fileName}`,
-    absolutePath: outputPath,
-    bonLivraisonPath,
-    procesVerbalPath,
-    permisPath: permisFilePath
-  });
-
-    console.log("✅ Requête terminée. Chemins renvoyés :");
-console.log({ absolutePath: outputPath, pdfPath: data.outputPath || `pdf/${fileName}` });
-
+      pdfPath: data.outputPath || `pdf/${fileName}`,
+      bonLivraisonPath,
+      procesVerbalPath,
+      permisPath: permisFilePath
+    });
 
 
   } catch (error) {

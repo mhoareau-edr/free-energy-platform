@@ -34,7 +34,6 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
   const duration = moment.duration(end.diff(start));
 
   const API = import.meta.env.VITE_API_URL;
-  console.log("🔗 API URL :", API);
 
   const months = Math.floor(duration.asMonths());
   const days = duration.subtract(months, 'months').days();
@@ -71,33 +70,21 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
     Object.assign(visite, updated);
   };
 
-  const buildURL = (path) => {
-  if (!path) return "";
-  const cleanedAPI = API.replace(/\/$/, "");
-  const cleanedPath = path.replace(/^\/+/, ""); // Supprime les `/` au début
-  return `${cleanedAPI}/${cleanedPath}`;
-};
-
-
-
   useEffect(() => {
-  const fetchMainPDF = async () => {
-    const res = await fetch(`${API}/visites/${visite.id}/documents?path=/1. Pièces Administratives`);
-    const docs = await res.json();
+    const fetchMainPDF = async () => {
+      const res = await fetch(`${API}/visites/${visite.id}/documents?path=/1. Pièces Administratives`);
+      const docs = await res.json();
+      const fichePDF = docs.find(d =>
+        d.nom === "Fiche Visite Technique" || d.nom === "Fiche_Visite_Technique.pdf"
+      );
 
-    const fichePDF = docs.find(d => d.nom === "Fiche_Visite_Technique.pdf");
+      if (fichePDF) {
+        setFichePDFUrl(`${API}/${fichePDF.chemin}`);
+      }
+    };
 
-    if (fichePDF) {
-      console.log("📄 Fiche PDF trouvée :", fichePDF);
-      setFichePDFUrl(buildURL(fichePDF.chemin));
-    } else {
-      console.warn("❌ Aucun fichier PDF de visite technique trouvé");
-    }
-  };
-
-  fetchMainPDF();
-}, [visite]);
-
+    fetchMainPDF();
+  }, [visite]);
 
   return (
     <div className="client-detail-wrapper">
@@ -173,19 +160,14 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
           </div>
 
           <div className="mt-6 space-y-2">
-            {fichePDFUrl ? (
-              <a
-                href={fichePDFUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-center bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded"
-              >
-                📄 Voir / Télécharger le PDF
-              </a>
-            ) : (
-              <p className="text-gray-400 italic">Aucun PDF disponible</p>
-            )}
-
+            <a
+              href={`${API}${visite.pdfPath}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-center bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded"
+            >
+              📄 Voir / Télécharger le PDF
+            </a>
 
             {user.role === "Technique" && (
               <>
@@ -337,42 +319,42 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                             Félicitations ! Toutes les étapes ont été validées. Le projet est officiellement clôturé. Vous pouvez consulter les documents, les photos et l’historique à tout moment.
                           </p>
                           <button
-                            onClick={async () => {
-                              const JSZip = (await import("jszip")).default;
-                              const { saveAs } = await import("file-saver");
+                          onClick={async () => {
+                            const JSZip = (await import("jszip")).default;
+                            const { saveAs } = await import("file-saver");
 
-                              const zip = new JSZip();
+                            const zip = new JSZip();
 
-                              const allItems = await fetch(`${API}/visites/${visite.id}/documents/full-tree`)
-                                .then(res => res.json());
+                            const allItems = await fetch(`${API}/visites/${visite.id}/documents/full-tree`)
+                              .then(res => res.json());
 
-                              await Promise.all(
-                                allItems.map(async (item) => {
-                                  const pathInZip = item.relativePath;
+                            await Promise.all(
+                              allItems.map(async (item) => {
+                                const pathInZip = item.relativePath;
 
-                                  if (item.type === "folder") {
-                                    zip.folder(pathInZip); // crée le dossier même vide
-                                  } else {
-                                    try {
-                                      const url = `${API}/uploads/visite-${visite.id}/${item.relativePath}`;
-                                      const response = await fetch(url);
-                                      if (!response.ok) return;
-                                      const blob = await response.blob();
-                                      zip.file(pathInZip, blob);
-                                    } catch (err) {
-                                      console.warn(`⚠️ Erreur pour ${item.relativePath}`, err);
-                                    }
+                                if (item.type === "folder") {
+                                  zip.folder(pathInZip); // crée le dossier même vide
+                                } else {
+                                  try {
+                                    const url = `${API}/uploads/visite-${visite.id}/${item.relativePath}`;
+                                    const response = await fetch(url);
+                                    if (!response.ok) return;
+                                    const blob = await response.blob();
+                                    zip.file(pathInZip, blob);
+                                  } catch (err) {
+                                    console.warn(`⚠️ Erreur pour ${item.relativePath}`, err);
                                   }
-                                })
-                              );
+                                }
+                              })
+                            );
 
-                              const content = await zip.generateAsync({ type: "blob" });
-                              saveAs(content, `Rapport_${visite.nom_interlocuteur || "client"}.zip`);
-                            }}
-                            className="bg-red-600 hover:bg-red-700 text-white py-1.5 px-4 rounded shadow mt-6"
-                          >
-                            Exporter un rapport global du projet
-                          </button>
+                            const content = await zip.generateAsync({ type: "blob" });
+                            saveAs(content, `Rapport_${visite.nom_interlocuteur || "client"}.zip`);
+                          }}
+                          className="bg-red-600 hover:bg-red-700 text-white py-1.5 px-4 rounded shadow mt-6"
+                        >
+                          Exporter un rapport global du projet
+                        </button>
 
                         </div>
 
@@ -386,9 +368,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                             <p><strong>✉️ Email :</strong> {visite.mail_interlocuteur || "—"}</p>
                             <p><strong>💡 Type :</strong> {visite.client_b2b ? "BtoB" : visite.client_b2c ? "BtoC" : "Non précisé"}</p>
                             <a
-                             href={buildURL(visite.pdfPath || fichePDFUrl)}
-
-
+                              href={`${API}/${visite.pdfPath}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="block w-full text-center bg-red-600 hover:bg-red-700 text-white py-2 rounded font-semibold"
@@ -824,42 +804,42 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                             Félicitations ! Toutes les étapes ont été validées. Le projet est officiellement clôturé. Vous pouvez consulter les documents, les photos et l’historique à tout moment.
                           </p>
                           <button
-                            onClick={async () => {
-                              const JSZip = (await import("jszip")).default;
-                              const { saveAs } = await import("file-saver");
+                          onClick={async () => {
+                            const JSZip = (await import("jszip")).default;
+                            const { saveAs } = await import("file-saver");
 
-                              const zip = new JSZip();
+                            const zip = new JSZip();
 
-                              const allItems = await fetch(`${API}/visites/${visite.id}/documents/full-tree`)
-                                .then(res => res.json());
+                            const allItems = await fetch(`${API}/visites/${visite.id}/documents/full-tree`)
+                              .then(res => res.json());
 
-                              await Promise.all(
-                                allItems.map(async (item) => {
-                                  const pathInZip = item.relativePath;
+                            await Promise.all(
+                              allItems.map(async (item) => {
+                                const pathInZip = item.relativePath;
 
-                                  if (item.type === "folder") {
-                                    zip.folder(pathInZip); // crée le dossier même vide
-                                  } else {
-                                    try {
-                                      const url = `${API}/uploads/visite-${visite.id}/${item.relativePath}`;
-                                      const response = await fetch(url);
-                                      if (!response.ok) return;
-                                      const blob = await response.blob();
-                                      zip.file(pathInZip, blob);
-                                    } catch (err) {
-                                      console.warn(`⚠️ Erreur pour ${item.relativePath}`, err);
-                                    }
+                                if (item.type === "folder") {
+                                  zip.folder(pathInZip); // crée le dossier même vide
+                                } else {
+                                  try {
+                                    const url = `${API}/uploads/visite-${visite.id}/${item.relativePath}`;
+                                    const response = await fetch(url);
+                                    if (!response.ok) return;
+                                    const blob = await response.blob();
+                                    zip.file(pathInZip, blob);
+                                  } catch (err) {
+                                    console.warn(`⚠️ Erreur pour ${item.relativePath}`, err);
                                   }
-                                })
-                              );
+                                }
+                              })
+                            );
 
-                              const content = await zip.generateAsync({ type: "blob" });
-                              saveAs(content, `Rapport_${visite.nom_interlocuteur || "client"}.zip`);
-                            }}
-                            className="bg-red-600 hover:bg-red-700 text-white py-1.5 px-4 rounded shadow mt-6"
-                          >
-                            Exporter un rapport global du projet
-                          </button>
+                            const content = await zip.generateAsync({ type: "blob" });
+                            saveAs(content, `Rapport_${visite.nom_interlocuteur || "client"}.zip`);
+                          }}
+                          className="bg-red-600 hover:bg-red-700 text-white py-1.5 px-4 rounded shadow mt-6"
+                        >
+                          Exporter un rapport global du projet
+                        </button>
 
                         </div>
 
@@ -873,7 +853,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                             <p><strong>✉️ Email :</strong> {visite.mail_interlocuteur || "—"}</p>
                             <p><strong>💡 Type :</strong> {visite.client_b2b ? "BtoB" : visite.client_b2c ? "BtoC" : "Non précisé"}</p>
                             <a
-                              href={buildURL(visite.pdfPath)}
+                              href={`${API}/${visite.pdfPath}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="block w-full text-center bg-red-600 hover:bg-red-700 text-white py-2 rounded font-semibold"
