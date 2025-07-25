@@ -200,21 +200,28 @@ router.post("/", async (req, res) => {
     const newPdfPath = path.join(basePath, "Fiche_Visite_Technique.pdf").replace(/\\/g, "/");
     const newProcesPath = path.join(basePath, "Proces_Verbal_Reception.pdf").replace(/\\/g, "/");
 
+    // 📁 Emplacement final dans le dossier de la visite
     const pdfFinalPath = path.join(UPLOADS_DIR, `visite-${newVisite.id}`, "1. Pièces Administratives", "Fiche_Visite_Technique.pdf");
-    fs.copyFileSync(pdfPath, pdfFinalPath);
-    fs.unlinkSync(pdfPath);
-
     const bonFinalPath = path.join(UPLOADS_DIR, `visite-${newVisite.id}`, "1. Pièces Administratives", "Bon_de_livraison.pdf");
-    fs.copyFileSync(bonLivraisonPath, bonFinalPath);
-    fs.unlinkSync(bonLivraisonPath);
-
     const procesFinalPath = path.join(UPLOADS_DIR, `visite-${newVisite.id}`, "1. Pièces Administratives", "Proces_Verbal_Reception.pdf");
-    fs.copyFileSync(procesVerbalPath, procesFinalPath);
-    fs.unlinkSync(procesVerbalPath);
 
+    // ✅ Utilise les chemins absolus reçus du frontend
+    if (req.body.absolutePath && fs.existsSync(req.body.absolutePath)) {
+      fs.copyFileSync(req.body.absolutePath, pdfFinalPath);
+      fs.unlinkSync(req.body.absolutePath);
+    }
 
-    console.log("📎 Chemins PDF:", { newPdfPath, newBonPath, newProcesPath });
+    if (req.body.bonLivraisonPath && fs.existsSync(req.body.bonLivraisonPath)) {
+      fs.copyFileSync(req.body.bonLivraisonPath, bonFinalPath);
+      fs.unlinkSync(req.body.bonLivraisonPath);
+    }
 
+    if (req.body.procesVerbalPath && fs.existsSync(req.body.procesVerbalPath)) {
+    fs.copyFileSync(req.body.procesVerbalPath, procesFinalPath);
+    fs.unlinkSync(req.body.procesVerbalPath);
+    }
+
+    console.log("📎 Chemins PDF:", { pdfFinalPath, bonFinalPath, procesFinalPath });
 
     await prisma.document.createMany({
       data: [
@@ -235,7 +242,7 @@ router.post("/", async (req, res) => {
         {
           nom: "Proces_Verbal_Reception.pdf",
           type: "pdf",
-          chemin: bonFinalPath,
+          chemin: procesFinalPath,
           path: "/1. Pièces Administratives",
           visiteId: newVisite.id
         }
