@@ -201,9 +201,18 @@ router.post("/", async (req, res) => {
     const newProcesPath = path.join(basePath, "Proces_Verbal_Reception.pdf").replace(/\\/g, "/");
 
 
-    fs.renameSync(pdfPath, path.join(UPLOADS_DIR, `visite-${newVisite.id}`, "1. Pièces Administratives", "Fiche_Visite_Technique.pdf"));
-    fs.renameSync(bonLivraisonPath, path.join(UPLOADS_DIR, `visite-${newVisite.id}`, "1. Pièces Administratives", "Bon_de_livraison.pdf"));
-    fs.renameSync(procesVerbalPath, path.join(UPLOADS_DIR, `visite-${newVisite.id}`, "1. Pièces Administratives", "Proces_Verbal_Reception.pdf"));
+    const pdfFinalPath = path.join(UPLOADS_DIR, `visite-${newVisite.id}`, "1. Pièces Administratives", "Fiche_Visite_Technique.pdf");
+    fs.copyFileSync(pdfPath, pdfFinalPath);
+    fs.unlinkSync(pdfPath);
+
+    const bonFinalPath = path.join(UPLOADS_DIR, `visite-${newVisite.id}`, "1. Pièces Administratives", "Bon_de_livraison.pdf");
+    fs.copyFileSync(bonLivraisonPath, bonFinalPath);
+    fs.unlinkSync(bonLivraisonPath);
+
+    const procesFinalPath = path.join(UPLOADS_DIR, `visite-${newVisite.id}`, "1. Pièces Administratives", "Proces_Verbal_Reception.pdf");
+    fs.copyFileSync(procesVerbalPath, procesFinalPath);
+    fs.unlinkSync(procesVerbalPath);
+
 
     console.log("📎 Chemins PDF:", { newPdfPath, newBonPath, newProcesPath });
 
@@ -213,21 +222,21 @@ router.post("/", async (req, res) => {
         {
           nom: "Fiche_Visite_Technique.pdf",
           type: "pdf",
-          chemin: newPdfPath,
+          chemin: pdfFinalPath,
           path: "/1. Pièces Administratives",
           visiteId: newVisite.id
         },
         {
           nom: "Bon_de_livraison.pdf",
           type: "pdf",
-          chemin: newBonPath,
+          chemin: bonFinalPath,
           path: "/1. Pièces Administratives",
           visiteId: newVisite.id
         },
         {
           nom: "Proces_Verbal_Reception.pdf",
           type: "pdf",
-          chemin: newProcesPath,
+          chemin: bonFinalPath,
           path: "/1. Pièces Administratives",
           visiteId: newVisite.id
         }
