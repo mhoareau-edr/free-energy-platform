@@ -257,6 +257,7 @@ const pdfBytes = fs.readFileSync(basePdfPath);
 
     console.log("🧾 Champs disponibles dans le PDF :");
     form.getFields().forEach(f => console.log(" -", f.getName()));
+    console.log("✅ Données reçues pour génération PDF :", data);
 
   } catch (error) {
     console.error("Erreur génération PDF :", error);
