@@ -206,7 +206,7 @@ const pdfBytes = fs.readFileSync(basePdfPath);
       if (permisFile) {
         const extension = path.extname(permisFile.originalname);
         const permisFileName = `permis_${Date.now()}${extension}`;
-        const relativePath = `visite-${data.id}/2. Déclaration admin/1. Mairie/${permisFileName}`;
+        const relativePath = path.join(`visite-${data.id}`, "2. Déclaration admin", "1. Mairie", permisFileName);
         const fullPath = path.join("/mnt/data/uploads", relativePath);
 
         // Crée le dossier s’il n’existe pas
