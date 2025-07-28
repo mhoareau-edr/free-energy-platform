@@ -31,13 +31,13 @@ export default function FormulaireTechnique({ visite, onSaved, user }) {
   const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-  if (visite?.data_pdf) {
-    setFormData((prev) => ({
-      ...prev,
-      ...visite.data_pdf
-    }));
-  }
-}, [visite]);
+    if (visite?.data_pdf) {
+      setFormData((prev) => ({
+        ...prev,
+        ...visite.data_pdf
+      }));
+    }
+  }, [visite]);
 
   const [section, setSection] = useState(1);
 
@@ -128,37 +128,37 @@ export default function FormulaireTechnique({ visite, onSaved, user }) {
   }
 
   const handleSaveDraft = async () => {
-  try {
+    try {
 
-    const res = await fetch(`${API}/visites/${visite.id}/data-pdf`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        user: user.name,
-        data_pdf: formData
-      })
-    });
+      const res = await fetch(`${API}/visites/${visite.id}/data-pdf`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user: user.name,
+          data_pdf: formData
+        })
+      });
 
-    if (!res.ok) throw new Error("Erreur lors de la sauvegarde du brouillon");
+      if (!res.ok) throw new Error("Erreur lors de la sauvegarde du brouillon");
 
-    const resEtape = await fetch(`${API}/visites/${visite.id}/etape`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        etape: "Visite Technique incomplète",
-        user: user.name
-      })
-    });
+      const resEtape = await fetch(`${API}/visites/${visite.id}/etape`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          etape: "Visite Technique incomplète",
+          user: user.name
+        })
+      });
 
-    if (!resEtape.ok) throw new Error("Erreur lors de la mise à jour de l'étape");
+      if (!resEtape.ok) throw new Error("Erreur lors de la mise à jour de l'étape");
 
-    toast.success("Formulaire sauvegardé");
+      toast.success("Formulaire sauvegardé");
 
-  } catch (err) {
-    console.error(err);
-    toast.error("Erreur lors de l'enregistrement partiel");
-  }
-};
+    } catch (err) {
+      console.error(err);
+      toast.error("Erreur lors de l'enregistrement partiel");
+    }
+  };
 
 
 
@@ -176,14 +176,14 @@ export default function FormulaireTechnique({ visite, onSaved, user }) {
           commentaires_orientation: formData.commentaires_orientation,
           commentaires_latitude: formData.commentaires_latitude,
           commentaires_longitude: formData.commentaires_longitude,
-          commentaires_connexion_internet: formData.commentaires_connexion_internet
+          commentaires_connexion_internet: formData.commentaires_connexion_internet,
+          prise_securisee_text: formData.prise_securisee_text
         })
       });
+      if (!resTech.ok) throw new Error("Erreur lors de l'enregistrement technique");
 
-      if (!resTech.ok) throw new Error("Erreur lors de l'enregistrement technique.");
-      console.log("DEBUG VISITE TECH", visite);
-
-      const payload = buildPdfPayload(formData, visite);
+      const updatedVisite = { ...visite, ...formData };
+      const payload = buildPdfPayload(formData, updatedVisite);
       payload.outputPath = `visite-${visite.id}/1. Pièces Administratives/Fiche_Visite_Technique.pdf`;
 
       const resPdf = await fetch(`${API}/generate-pdf`, {
@@ -235,18 +235,18 @@ export default function FormulaireTechnique({ visite, onSaved, user }) {
   };
 
   const saveAndNextSection = async () => {
-  try {
-    await fetch(`${API}/visites/${visite.id}/brouillon-tech`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ data: formData, user: user.name }),
-    });
-    setSection(prev => prev + 1);
-  } catch (err) {
-    console.error("Erreur de sauvegarde avant passage :", err);
-    toast.error("Erreur lors de la sauvegarde automatique");
-  }
-};
+    try {
+      await fetch(`${API}/visites/${visite.id}/brouillon-tech`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: formData, user: user.name }),
+      });
+      setSection(prev => prev + 1);
+    } catch (err) {
+      console.error("Erreur de sauvegarde avant passage :", err);
+      toast.error("Erreur lors de la sauvegarde automatique");
+    }
+  };
 
   const prevSection = () => setSection(prev => Math.max(prev - 1, 1));
 
@@ -299,7 +299,7 @@ export default function FormulaireTechnique({ visite, onSaved, user }) {
           rel="noopener noreferrer"
           className="pdf-button"
         >
-          Voir PDF  
+          Voir PDF
         </a>
       </div>
 
