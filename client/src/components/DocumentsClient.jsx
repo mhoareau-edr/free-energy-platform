@@ -145,7 +145,7 @@ export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUp
       goToFolder(item.nom);
     } else {
 
-      window.open(encodeURI(`${API}/${item.chemin}`), "_blank");
+      window.open(encodeURI(`${API}/uploads/${item.chemin}`), "_blank");
     }
   };
 
@@ -182,7 +182,7 @@ export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUp
     if (item.type === "folder") {
       goToFolder(item.nom);
     } else if (item.chemin) {
-      window.open(encodeURI(`${API}/${item.chemin}`), "_blank");
+      window.open(encodeURI(`${API}/uploads/${item.chemin}`), "_blank");
 
     }
 

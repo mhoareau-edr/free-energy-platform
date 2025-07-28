@@ -79,7 +79,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
       );
 
       if (fichePDF) {
-        setFichePDFUrl(`${API}/${fichePDF.chemin}`);
+        setFichePDFUrl(`${API}/uploads/${fichePDF.chemin}`);
       }
     };
 
@@ -161,7 +161,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
 
           <div className="mt-6 space-y-2">
             <a
-              href={`${API}/${visite.pdfPath}`}
+              href={`${API}/uploads/${visite.pdfPath}`}
               target="_blank"
               rel="noopener noreferrer"
               className="block text-center bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded"
@@ -368,7 +368,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                             <p><strong>✉️ Email :</strong> {visite.mail_interlocuteur || "—"}</p>
                             <p><strong>💡 Type :</strong> {visite.client_b2b ? "BtoB" : visite.client_b2c ? "BtoC" : "Non précisé"}</p>
                             <a
-                              href={`${API}/${visite.pdfPath}`}
+                              href={`${API}/uploads/${visite.pdfPath}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="block w-full text-center bg-red-600 hover:bg-red-700 text-white py-2 rounded font-semibold"
@@ -407,7 +407,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                                   {visite.photos.slice(0, 6).map((photo, index) => (
                                     <img
                                       key={index}
-                                      src={`${API}/${photo}`}
+                                      src={`${API}/uploads/${photo}`}
                                       alt={`Photo ${index + 1}`}
                                       className="w-full h-full object-cover rounded shadow cursor-pointer hover:scale-105 transition-transform"
                                       onClick={() => setActiveTab("photos")}
@@ -853,7 +853,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                             <p><strong>✉️ Email :</strong> {visite.mail_interlocuteur || "—"}</p>
                             <p><strong>💡 Type :</strong> {visite.client_b2b ? "BtoB" : visite.client_b2c ? "BtoC" : "Non précisé"}</p>
                             <a
-                              href={`${API}/${visite.pdfPath}`}
+                              href={`${API}/uploads/${visite.pdfPath}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="block w-full text-center bg-red-600 hover:bg-red-700 text-white py-2 rounded font-semibold"
@@ -892,7 +892,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                                   {visite.photos.slice(0, 6).map((photo, index) => (
                                     <img
                                       key={index}
-                                      src={`${API}/${photo}`}
+                                      src={`${API}/uploads/${photo}`}
                                       alt={`Photo ${index + 1}`}
                                       className="w-full h-full object-cover rounded shadow cursor-pointer hover:scale-105 transition-transform"
                                       onClick={() => setActiveTab("photos")}
@@ -1130,7 +1130,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
 
                           await Promise.all(
                             visite.photos.map(async (photo) => {
-                              const response = await fetch(`${API}/${photo}`);
+                              const response = await fetch(`${API}/uploads/${photo}`);
                               const blob = await response.blob();
                               const filename = photo.split("/").pop();
                               zip.file(filename, blob);
@@ -1150,7 +1150,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                         <div key={index} className="w-40 h-40 border rounded overflow-hidden shadow">
                           <img
                             onClick={() => setSelectedPhoto(index)}
-                            src={`${API}/${photo}`}
+                            src={`${API}/uploads/${photo}`}
                             alt={`Photo ${index + 1}`}
                             className="w-full h-full object-cover cursor-pointer"
                           />
@@ -1248,7 +1248,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                     </button>
 
                     <img
-                      src={`${API}/${visite.photos[selectedPhoto]}`}
+                      src={`${API}/uploads/${visite.photos[selectedPhoto]}`}
                       alt="Aperçu"
                       className="max-w-[60vw] max-h-[60vh] rounded"
                     />
@@ -1256,7 +1256,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                     <button
                       onClick={() => {
                         const link = document.createElement('a');
-                        link.href = `${API}/${visite.photos[selectedPhoto]}`;
+                        link.href = `${API}/uploads/${visite.photos[selectedPhoto]}`;
                         link.download = visite.photos[selectedPhoto].split("/").pop();
                         document.body.appendChild(link);
                         link.click();
