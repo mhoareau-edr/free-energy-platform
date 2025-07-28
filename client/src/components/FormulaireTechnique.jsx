@@ -184,8 +184,7 @@ export default function FormulaireTechnique({ visite, onSaved, user }) {
       console.log("DEBUG VISITE TECH", visite);
 
       const payload = buildPdfPayload(formData, visite);
-      payload.outputPath = `uploads/visite-${visite.id}/1. Pièces Administratives/Fiche_Visite_Technique.pdf`;
-      console.log("📦 Payload envoyé au backend :", payload);
+      payload.outputPath = `visite-${visite.id}/1. Pièces Administratives/Fiche_Visite_Technique.pdf`;
 
       const resPdf = await fetch(`${API}/generate-pdf`, {
         method: "POST",
@@ -295,7 +294,7 @@ export default function FormulaireTechnique({ visite, onSaved, user }) {
       <div className="flex justify-between items-center mb-4">
         <h2>Formulaire Visite Technique</h2>
         <a
-          href={`${API}/${visite.pdfPath}`}
+          href={`${API}/uploads/${visite.pdfPath}`}
           target="_blank"
           rel="noopener noreferrer"
           className="pdf-button"
