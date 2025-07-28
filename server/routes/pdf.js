@@ -172,8 +172,11 @@ router.post("/generate-pdf", upload.any(), async (req, res) => {
       ? path.join("/mnt/data", data.outputPath)
       : path.join("/mnt/data/pdf", fileName);
 
+    const outputDir = path.dirname(outputPath);
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+      }
     fs.writeFileSync(outputPath, pdfBytesUpdated);
-
 
     let permisFilePath = null;
 
