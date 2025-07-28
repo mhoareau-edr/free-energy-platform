@@ -246,6 +246,13 @@ router.post("/generate-pdf", upload.any(), async (req, res) => {
       permisPath: permisFilePath
     });
 
+    console.log("✅ Champs techniques :", {
+      inclinaison: data.commentaires_inclinaison,
+      orientation: data.commentaires_orientation,
+      latitude: data.commentaires_latitude,
+      connexion: data.commentaires_connexion_internet
+    });
+
 
   } catch (error) {
     console.error("Erreur génération PDF :", error);
