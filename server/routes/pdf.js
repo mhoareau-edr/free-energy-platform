@@ -172,12 +172,8 @@ router.post("/generate-pdf", upload.any(), async (req, res) => {
       ? path.join("/mnt/data", data.outputPath)
       : path.join("/mnt/data/pdf", fileName);
 
-      const outputDir = path.dirname(outputPath);
-        if (!fs.existsSync(outputDir)) {
-          fs.mkdirSync(outputDir, { recursive: true });
-        }
-
     fs.writeFileSync(outputPath, pdfBytesUpdated);
+
 
     let permisFilePath = null;
 
@@ -240,14 +236,12 @@ router.post("/generate-pdf", upload.any(), async (req, res) => {
       ["technicien_vt", "date_de_la_demande", "nom_interlocuteur", "adresse_pose", "tel_interlocuteur"]
     );
 
-
     res.status(200).json({
-      pdfPath: data.outputPath ? `uploads/${data.outputPath}` : `pdf/${fileName}`,
+      pdfPath: data.outputPath || `pdf/${fileName}`,
       bonLivraisonPath,
       procesVerbalPath,
       permisPath: permisFilePath
     });
-
 
 
   } catch (error) {
