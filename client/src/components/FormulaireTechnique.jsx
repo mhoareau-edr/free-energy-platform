@@ -123,6 +123,7 @@ export default function FormulaireTechnique({ visite, onSaved, user }) {
         transformed[item] = true;
       });
     });
+    payload.existingPdfPath = visite.pdfPath;
 
     return transformed;
   }
@@ -299,7 +300,7 @@ export default function FormulaireTechnique({ visite, onSaved, user }) {
           rel="noopener noreferrer"
           className="pdf-button"
         >
-          Voir PDF
+          Voir PDF  
         </a>
       </div>
 

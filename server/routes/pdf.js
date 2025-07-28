@@ -31,8 +31,14 @@ router.post("/generate-pdf", upload.any(), async (req, res) => {
       data = req.body;
     }
 
-    const pdfPathBase = path.join(__dirname, "..", "assets", "formulaire_vt.pdf");
-    const pdfBytes = fs.readFileSync(pdfPathBase);
+    const existingPdfPath = path.join("/mnt/data", data.existingPdfPath || "assets/formulaire_vt.pdf");
+
+    if (!fs.existsSync(existingPdfPath)) {
+      return res.status(400).json({ error: "Le PDF de base n'existe pas." });
+    }
+
+    const pdfBytes = fs.readFileSync(existingPdfPath);
+
     const pdfDoc = await PDFDocument.load(pdfBytes);
     const form = pdfDoc.getForm();
 
@@ -252,6 +258,10 @@ router.post("/generate-pdf", upload.any(), async (req, res) => {
       latitude: data.commentaires_latitude,
       connexion: data.commentaires_connexion_internet
     });
+
+    console.log("🧾 Champs disponibles dans le PDF :");
+form.getFields().forEach(f => console.log(" -", f.getName()));
+
 
 
   } catch (error) {
