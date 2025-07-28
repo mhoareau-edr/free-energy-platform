@@ -186,6 +186,12 @@ const pdfBytes = fs.readFileSync(basePdfPath);
         fs.mkdirSync(outputDir, { recursive: true });
       }
     fs.writeFileSync(outputPath, pdfBytesUpdated);
+    const uploadsPath = path.join("/mnt/data/uploads", data.outputPath);
+const uploadsDir = path.dirname(uploadsPath);
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+fs.copyFileSync(outputPath, uploadsPath);
+console.log("✅ Copie vers uploads :", uploadsPath);
 
     let permisFilePath = null;
 
