@@ -60,7 +60,8 @@ export default function DPTechnique({ visite, onSaved, user }) {
         ...payload,
         puissance_souhaitée: oldData?.data_pdf?.puissance_souhaitée || oldData?.puissance_souhaitee || "",
         photos: oldData?.data_pdf?.photos || [],
-        commentaires_technique: oldData?.data_pdf?.commentaires_technique || ""
+        commentaires_technique: oldData?.data_pdf?.commentaires_technique || "",
+        outputPath: `visite-${visite.id}/1. Pièces Administratives/Fiche_Visite_Technique.pdf`
       };
 
       const formPayload = new FormData();

@@ -206,9 +206,16 @@ const pdfBytes = fs.readFileSync(basePdfPath);
       if (permisFile) {
         const extension = path.extname(permisFile.originalname);
         const permisFileName = `permis_${Date.now()}${extension}`;
-        const fullPath = path.join("/mnt/data/docs", permisFileName);
-        fs.writeFileSync(fullPath, permisFile.buffer);
-        permisFilePath = `docs/${permisFileName}`;
+const relativePath = `visite-${data.id}/2. Déclaration admin/${permisFileName}`;
+const fullPath = path.join("/mnt/data/uploads", relativePath);
+
+// Crée le dossier s’il n’existe pas
+const dir = path.dirname(fullPath);
+if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+fs.writeFileSync(fullPath, permisFile.buffer);
+permisFilePath = relativePath;
+
       }
     }
 
