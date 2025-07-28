@@ -206,18 +206,18 @@ const pdfBytes = fs.readFileSync(basePdfPath);
       if (permisFile) {
         const extension = path.extname(permisFile.originalname);
         const permisFileName = `permis_${Date.now()}${extension}`;
-const relativePath = `visite-${data.id}/2. Déclaration admin/${permisFileName}`;
-const fullPath = path.join("/mnt/data/uploads", relativePath);
+        const relativePath = `visite-${data.id}/2. Déclaration admin/1. Mairie/${permisFileName}`;
+        const fullPath = path.join("/mnt/data/uploads", relativePath);
 
-// Crée le dossier s’il n’existe pas
-const dir = path.dirname(fullPath);
-if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        // Crée le dossier s’il n’existe pas
+        const dir = path.dirname(fullPath);
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-fs.writeFileSync(fullPath, permisFile.buffer);
-permisFilePath = relativePath;
+        fs.writeFileSync(fullPath, permisFile.buffer);
+        permisFilePath = relativePath;
 
-      }
-    }
+              }
+            }
 
     async function generateAndSavePDF(inputPath, outputName, dataToFill, fieldNames = []) {
       const pdfBytes = fs.readFileSync(inputPath);

@@ -145,7 +145,13 @@ export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUp
       goToFolder(item.nom);
     } else {
 
-      window.open(encodeURI(`${API}/uploads/${item.chemin}`), "_blank");
+      // Assure qu'on ne double pas "/uploads"
+const cleanPath = item.chemin.startsWith("uploads/")
+  ? item.chemin.replace(/^uploads\//, "")
+  : item.chemin;
+
+window.open(encodeURI(`${API}/uploads/${cleanPath}`), "_blank");
+
     }
   };
 
@@ -182,7 +188,13 @@ export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUp
     if (item.type === "folder") {
       goToFolder(item.nom);
     } else if (item.chemin) {
-      window.open(encodeURI(`${API}/uploads/${item.chemin}`), "_blank");
+      // Assure qu'on ne double pas "/uploads"
+const cleanPath = item.chemin.startsWith("uploads/")
+  ? item.chemin.replace(/^uploads\//, "")
+  : item.chemin;
+
+window.open(encodeURI(`${API}/uploads/${cleanPath}`), "_blank");
+
 
     }
 
