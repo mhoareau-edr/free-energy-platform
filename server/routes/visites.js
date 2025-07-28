@@ -392,6 +392,10 @@ router.put("/visites/:id", upload.any(), async (req, res) => {
 router.put("/:id/pdf", async (req, res) => {
   const { id } = req.params;
   const { pdfPath, user } = req.body;
+  const normalizedPath = pdfPath.startsWith("uploads/")
+  ? pdfPath.slice("uploads/".length)
+  : pdfPath;
+
   const visite = await prisma.visite.findUnique({
       where: { id: parseInt(id) },
       select: { nom_interlocuteur: true }
@@ -400,7 +404,7 @@ router.put("/:id/pdf", async (req, res) => {
   try {
     await prisma.visite.update({
       where: { id: parseInt(id) },
-      data: { pdfPath }
+      data: { pdfPath: normalizedPath }
     });
 
     await prisma.document.upsert({
@@ -411,14 +415,14 @@ router.put("/:id/pdf", async (req, res) => {
         }
       },
       update: {
-        chemin: pdfPath,
+        chemin: normalizedPath,
         updatedAt: new Date(),
         path: "/1. Pièces Administratives"
       },
       create: {
         nom: "Fiche_Visite_Technique.pdf",
         type: "pdf",
-        chemin: pdfPath,
+        chemin: normalizedPath,
         path: "/1. Pièces Administratives",
         visite: { connect: { id: parseInt(id) } }
       }
