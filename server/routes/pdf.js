@@ -31,7 +31,7 @@ router.post("/generate-pdf", upload.any(), async (req, res) => {
       data = req.body;
     }
 
-    const pdfPathBase = path.join(__dirname, "..", "assets", "formulaire_vt.pdf");
+    const pdfPathBase = path.join("/mnt/data", data.existingPdfPath || "assets/formulaire_vt.pdf");
     const pdfBytes = fs.readFileSync(pdfPathBase);
     const pdfDoc = await PDFDocument.load(pdfBytes);
     const form = pdfDoc.getForm();
@@ -246,16 +246,8 @@ router.post("/generate-pdf", upload.any(), async (req, res) => {
       permisPath: permisFilePath
     });
 
-   console.log("✅ Champs techniques :", {
-      inclinaison: data.commentaires_inclinaison,
-      orientation: data.commentaires_orientation,
-      latitude: data.commentaires_latitude,
-      connexion: data.commentaires_connexion_internet
-    });
-
     console.log("🧾 Champs disponibles dans le PDF :");
     form.getFields().forEach(f => console.log(" -", f.getName()));
-
 
   } catch (error) {
     console.error("Erreur génération PDF :", error);

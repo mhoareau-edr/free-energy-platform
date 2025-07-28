@@ -123,8 +123,7 @@ export default function FormulaireTechnique({ visite, onSaved, user }) {
         transformed[item] = true;
       });
     });
-    transformed.existingPdfPath = visite.pdfPath;
-
+    payload.existingPdfPath = visite.pdfPath;
     return transformed;
   }
 
