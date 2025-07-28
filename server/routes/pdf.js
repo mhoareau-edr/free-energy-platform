@@ -31,8 +31,17 @@ router.post("/generate-pdf", upload.any(), async (req, res) => {
       data = req.body;
     }
 
-    const pdfPathBase = path.join("/mnt/data", data.existingPdfPath || "assets/formulaire_vt.pdf");
-    const pdfBytes = fs.readFileSync(pdfPathBase);
+    const basePdfPath = data.existingPdfPath
+  ? path.join("/mnt/data", data.existingPdfPath)
+  : path.join(__dirname, "..", "assets", "formulaire_vt.pdf");
+
+    if (!fs.existsSync(basePdfPath)) {
+      console.error("❌ PDF source introuvable :", basePdfPath);
+      return res.status(400).json({ error: "Le PDF de base n'existe pas." });
+  } 
+
+const pdfBytes = fs.readFileSync(basePdfPath);
+
     const pdfDoc = await PDFDocument.load(pdfBytes);
     const form = pdfDoc.getForm();
 
