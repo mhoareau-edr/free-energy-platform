@@ -146,11 +146,12 @@ export default function DocumentsClient({ visiteId, visite, refreshTrigger, onUp
     } else {
 
       // Assure qu'on ne double pas "/uploads"
-const cleanPath = item.chemin.startsWith("uploads/")
-  ? item.chemin.replace(/^uploads\//, "")
-  : item.chemin;
+      const cleanPath = item.chemin
+        .replace(/^\/+/, "")           // Retire tout slash au début
+        .replace(/^uploads\/+/, "");   // Retire "uploads/" si présent
 
-window.open(encodeURI(`${API}/uploads/${cleanPath}`), "_blank");
+      window.open(encodeURI(`${API}/uploads/${cleanPath}`), "_blank");
+
 
     }
   };
@@ -189,13 +190,11 @@ window.open(encodeURI(`${API}/uploads/${cleanPath}`), "_blank");
       goToFolder(item.nom);
     } else if (item.chemin) {
       // Assure qu'on ne double pas "/uploads"
-const cleanPath = item.chemin.startsWith("uploads/")
-  ? item.chemin.replace(/^uploads\//, "")
-  : item.chemin;
+      const cleanPath = item.chemin
+        .replace(/^\/+/, "")           // Retire tout slash au début
+        .replace(/^uploads\/+/, "");   // Retire "uploads/" si présent
 
-window.open(encodeURI(`${API}/uploads/${cleanPath}`), "_blank");
-
-
+      window.open(encodeURI(`${API}/uploads/${cleanPath}`), "_blank");
     }
 
     setContextMenu(null);
@@ -288,7 +287,6 @@ window.open(encodeURI(`${API}/uploads/${cleanPath}`), "_blank");
       type: "pdf"
     }
   ].filter(Boolean);
-
 
   const allItems = [...items];
 
@@ -392,40 +390,40 @@ window.open(encodeURI(`${API}/uploads/${cleanPath}`), "_blank");
       {uploading && <p className="text-sm text-yellow-600">⏳ Importation en cours...</p>}
 
       {allItems.length === 0 ? (
-  <p className="text-gray-500 italic mt-4 dark:text-white">📁 Ce dossier est vide.</p>
-) : (
-  <div className="grid grid-cols-1 md:grid-cols-1 gap-4 ">
-    {allItems.map((item, idx) => (
-      <div
-        key={idx}
-        draggable
-        onDragStart={(e) => handleDragStart(e, item)}
-        onDragOver={(e) => handleDragOver(e)}
-        onDrop={(e) => handleDrop(e, item)}
-        className={`shadow p-4 rounded-lg flex items-center justify-between transition cursor-pointer 
+        <p className="text-gray-500 italic mt-4 dark:text-white">📁 Ce dossier est vide.</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-4 ">
+          {allItems.map((item, idx) => (
+            <div
+              key={idx}
+              draggable
+              onDragStart={(e) => handleDragStart(e, item)}
+              onDragOver={(e) => handleDragOver(e)}
+              onDrop={(e) => handleDrop(e, item)}
+              className={`shadow p-4 rounded-lg flex items-center justify-between transition cursor-pointer 
           ${selectedDoc?.chemin === item.chemin ? "bg-red-50 dark:bg-[#202427] " : "bg-white hover:bg-red-50 dark:bg-[#353c42]"}`}
-        onClick={() => {
-          setSelectedDoc((prev) => (prev?.chemin === item.chemin ? null : item));
-        }}
-        onDoubleClick={() => handleDoubleClick(item)}
-        onContextMenu={(e) => handleContextMenu(e, item)}
-      >
-        <div className="flex items-center gap-3">
-          {item.type === "folder" ? (
-            <FaFolder className="text-yellow-500 text-xl" />
-          ) : item.nom?.endsWith(".pdf") ? (
-            <FaFilePdf className="text-red-500 text-xl" />
-          ) : (
-            <FaFileAlt className="text-gray-500 text-xl" />
-          )}
-          <p className="font-medium text-gray-800 truncate max-w-[450px] select-none dark:text-white">
-            {item.nom || "Nom inconnu"}
-          </p>
+              onClick={() => {
+                setSelectedDoc((prev) => (prev?.chemin === item.chemin ? null : item));
+              }}
+              onDoubleClick={() => handleDoubleClick(item)}
+              onContextMenu={(e) => handleContextMenu(e, item)}
+            >
+              <div className="flex items-center gap-3">
+                {item.type === "folder" ? (
+                  <FaFolder className="text-yellow-500 text-xl" />
+                ) : item.nom?.endsWith(".pdf") ? (
+                  <FaFilePdf className="text-red-500 text-xl" />
+                ) : (
+                  <FaFileAlt className="text-gray-500 text-xl" />
+                )}
+                <p className="font-medium text-gray-800 truncate max-w-[450px] select-none dark:text-white">
+                  {item.nom || "Nom inconnu"}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
-    ))}
-  </div>
-)}
+      )}
 
 
       {showRenameModal && (
