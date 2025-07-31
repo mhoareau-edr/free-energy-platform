@@ -668,8 +668,6 @@ router.post("/:id/documents", uploadDoc.single("file"), async (req, res) => {
   const { id } = req.params;
   const subpath = req.body.path || "/";
   const cleanSubpath = subpath.replace(/^\/+/, "").replace(/\/+$/, "");
-  console.log("📁 Subpath reçu :", req.body.path);
-
 
   if (!req.file) {
     console.error("❌ Aucun fichier reçu. Body :", req.body);
@@ -679,18 +677,17 @@ router.post("/:id/documents", uploadDoc.single("file"), async (req, res) => {
   const extension = path.extname(req.file.originalname).toLowerCase();
   const nomFinal = req.body.nom || req.file.originalname;
   const chemin = path.join("uploads", `visite-${id}`, cleanSubpath, nomFinal).replace(/\\/g, "/");
-  console.log("📤 Fichier reçu :", req.file.originalname);
-  console.log("➡️  Destination finale : ", chemin);
 
   const tempPath = req.file.path; // Fichier temporaire
   const absPath = path.join(uploadDir, `visite-${id}`, cleanSubpath, nomFinal);
 
-// Créer le dossier cible si nécessaire
-const destinationFolder = path.dirname(absPath);
-if (!fs.existsSync(destinationFolder)) fs.mkdirSync(destinationFolder, { recursive: true });
+  // Créer le dossier cible si nécessaire
+  const destinationFolder = path.dirname(absPath);
+  if (!fs.existsSync(destinationFolder)) fs.mkdirSync(destinationFolder, { recursive: true });
 
-// Déplacer le fichier
-fs.renameSync(tempPath, absPath);
+  // Déplacer le fichier
+  fs.copyFileSync(tempPath, absPath);
+  fs.unlinkSync(tempPath);
 
 
   const type = extension === ".pdf"
