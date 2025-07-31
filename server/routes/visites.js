@@ -57,7 +57,7 @@ const uploadDoc = multer({
       return cb(null, true);
     }
 
-    const basePath = path.join(uploadDir, `visite-${id}`, subpath);
+    const basePath = path.join(uploadDir, `visite-${visiteId}`, subpath);
     const filePath = path.join(basePath, file.originalname);
 
     cb(null, true);
