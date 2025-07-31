@@ -47,22 +47,7 @@ const storageDocuments = multer.diskStorage({
   }
 });
 
-const uploadDoc = multer({
-  storage: storageDocuments,
-  fileFilter: function (req, file, cb) {
-    const visiteId = req.params?.id || "undefined";
-
-    if (!visiteId || visiteId === "undefined") {
-      console.warn("⚠️ visiteId manquant dans fileFilter");
-      return cb(null, true);
-    }
-
-    const basePath = path.join(uploadDir, `visite-${visiteId}`, subpath);
-    const filePath = path.join(basePath, file.originalname);
-
-    cb(null, true);
-  }
-});
+const uploadDoc = multer({ storage: storageDocuments });
 
 /* GET ALL VISITES */
 router.get("/", async (req, res) => {
