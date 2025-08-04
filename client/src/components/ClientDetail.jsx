@@ -196,7 +196,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                     const res = await fetch(`${API}/users`);
                     const data = await res.json();
                     if (Array.isArray(data)) {
-                      setAvailableUsers(data.filter(u => u.role === "Technique" && u.name !== user.name));
+                      setAvailableUsers(data.filter(u => u.role === "Technique"));
                     } else {
                       console.warn("Format inattendu des utilisateurs :", data);
                       setAvailableUsers([]);
@@ -204,7 +204,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                     setShowTransferModal(true);
                   }}
                 >
-                  🔁 Transférer le dossier
+                  🔁 Attribuer le dossier
                 </button>
               </>
             )}
