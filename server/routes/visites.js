@@ -676,7 +676,7 @@ router.post("/:id/documents", uploadDoc.single("file"), async (req, res) => {
 
   const extension = path.extname(req.file.originalname).toLowerCase();
   const nomFinal = req.body.nom || req.file.originalname;
-  const chemin = path.join("uploads", `visite-${id}`, cleanSubpath, nomFinal).replace(/\\/g, "/");
+  const chemin = path.join(`visite-${id}`, cleanSubpath, nomFinal).replace(/\\/g, "/");
 
   const tempPath = req.file.path; // Fichier temporaire
   const absPath = path.join(uploadDir, `visite-${id}`, cleanSubpath, nomFinal);
@@ -688,7 +688,6 @@ router.post("/:id/documents", uploadDoc.single("file"), async (req, res) => {
   // Déplacer le fichier
   fs.copyFileSync(tempPath, absPath);
   fs.unlinkSync(tempPath);
-
 
   const type = extension === ".pdf"
     ? "pdf"
