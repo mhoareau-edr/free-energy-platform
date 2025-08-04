@@ -898,13 +898,14 @@ router.put("/:id/documents/move", async (req, res) => {
 
 router.post("/:id/documents/folder", async (req, res) => {
   const { id } = req.params;
-  const { path, name } = req.body;
-  const pathModule = await import("path");
-  const fullPath = path.join(uploadDir, `visite-${id}`, subpath);
+  const { path: basePath, name } = req.body;
+
+  const cleanBase = basePath.replace(/^\/+/, "").replace(/\/+$/, "");
+  const finalPath = path.join(uploadDir, `visite-${id}`, cleanBase, name);
 
   try {
-    fs.mkdirSync(fullPath, { recursive: true });
-    console.log("✅ Dossier créé :", fullPath);
+    fs.mkdirSync(finalPath, { recursive: true });
+    console.log("✅ Dossier créé :", finalPath);
     res.status(200).json({ success: true });
   } catch (err) {
     console.error("❌ Erreur création dossier :", err);
