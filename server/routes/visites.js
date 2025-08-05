@@ -921,10 +921,12 @@ router.put("/:id/documents/rename", async (req, res) => {
     return res.status(400).json({ error: "Chemin ou nouveau nom manquant" });
   }
 
-  const oldAbs = path.join(__dirname, "..", oldPath);
-  const dirPath = path.dirname(oldAbs);
-  const newAbs = path.join(dirPath, newName);
-  const newChemin = `uploads/visite-${id}/${path.relative(path.join(uploadDir, `visite-${id}`), subpath)}`;
+  const oldAbs = path.join("/mnt/data", oldPath);
+  const parentDir = path.dirname(oldAbs);
+  const newAbs = path.join(parentDir, newName);
+
+  const oldRelative = oldPath;
+  const newRelative = path.join(path.dirname(oldPath), newName).replace(/\\/g, "/");
 
   try {
     if (!fs.existsSync(oldAbs)) {
@@ -933,20 +935,49 @@ router.put("/:id/documents/rename", async (req, res) => {
 
     fs.renameSync(oldAbs, newAbs);
 
-    const updated = await prisma.document.updateMany({
-      where: { chemin: oldPath },
-      data: {
-        chemin: newChemin,
-        nom: newName
-      }
-    });
+    const stat = fs.statSync(newAbs);
 
-    res.status(200).json({ success: true, updated });
+    if (stat.isDirectory()) {
+      // 🎯 Mise à jour récursive des chemins en base pour les documents dans ce dossier
+      const documents = await prisma.document.findMany({
+        where: {
+          visiteId: parseInt(id),
+          chemin: { startsWith: oldRelative }
+        }
+      });
+
+      for (const doc of documents) {
+        const nouveauChemin = doc.chemin.replace(oldRelative, newRelative);
+        const nouveauPath = doc.path.replace(oldRelative, newRelative);
+
+        await prisma.document.update({
+          where: { id: doc.id },
+          data: {
+            chemin: nouveauChemin,
+            path: nouveauPath
+          }
+        });
+      }
+
+      res.status(200).json({ success: true, type: "folder", updated: documents.length });
+    } else {
+      // 📝 Cas d’un simple fichier
+      await prisma.document.updateMany({
+        where: { chemin: oldRelative },
+        data: {
+          chemin: newRelative,
+          nom: newName
+        }
+      });
+
+      res.status(200).json({ success: true, type: "file" });
+    }
   } catch (err) {
     console.error("Erreur renommage :", err);
     res.status(500).json({ error: "Échec du renommage" });
   }
 });
+
 
 router.put("/:id/planifier-pose", async (req, res) => {
   const { id } = req.params;
