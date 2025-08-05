@@ -204,7 +204,7 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                     setShowTransferModal(true);
                   }}
                 >
-                  🔁 Attribuer le dossier
+                  🔁 Attribution CA
                 </button>
               </>
             )}
