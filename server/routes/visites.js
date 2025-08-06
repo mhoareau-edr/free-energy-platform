@@ -808,6 +808,27 @@ router.get("/:id/documents/all-recursive", async (req, res) => {
   }
 });
 
+// Planifier une visite technique
+router.put('/:id/planifier-vt', async (req, res) => {
+  const { id } = req.params;
+  const { date_visite_technique, user } = req.body;
+
+  try {
+    const updated = await prisma.visite.update({
+      where: { id: parseInt(id) },
+      data: {
+        date_visite_technique: new Date(date_visite_technique),
+        updatedBy: user || "Système"
+      }
+    });
+
+    res.json({ success: true, updated });
+  } catch (error) {
+    console.error("Erreur lors de la planification de la visite technique :", error);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+});
+
 router.get("/:id/documents/full-tree", async (req, res) => {
   const { id } = req.params;
   const subpath = req.query.path || "/";
@@ -1139,3 +1160,4 @@ router.put("/:id/read", async (req, res) => {
 });
 
 export default router;
+

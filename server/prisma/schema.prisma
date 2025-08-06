@@ -85,6 +85,7 @@ model Visite {
   client_b2c Boolean? @default(false)
   techniciens_recommandes Int?
 
+  date_visite_technique   DateTime? @db.Timestamp(6)
 
 }
 

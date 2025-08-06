@@ -13,6 +13,7 @@ import DetailsPoseClient from "./DetailsPoseClient";
 import UploaderPhotosPose from "./UploaderPhotosPose";
 import moment from "moment";
 import confetti from "canvas-confetti";
+import CalendarVT from "./CalendarVT";
 
 export default function ClientDetail({ visite, onClose, user, refreshVisites, refreshActivities }) {
   const [activeTab, setActiveTab] = useState("suivi");
@@ -168,6 +169,15 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
             >
               📄 Voir / Télécharger le PDF
             </a>
+
+            {user.role === "Technique" && (
+              <button
+                className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 rounded"
+                onClick={() => setActiveTab("planifierVT")}
+              >
+                📅 Planifier la VT
+              </button>
+            )}
 
             {user.role === "Technique" && (
               <>
@@ -1162,6 +1172,10 @@ export default function ClientDetail({ visite, onClose, user, refreshVisites, re
                   <p className="text-gray-500 italic">Aucune photo disponible pour ce client.</p>
                 )}
               </div>
+            )}
+
+            {activeTab === "planifierVT" && (
+              <CalendarVT visite={visite} user={user} />
             )}
 
             {showTransferModal && (
