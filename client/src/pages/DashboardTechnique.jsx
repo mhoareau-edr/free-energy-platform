@@ -301,7 +301,7 @@ export default function DashboardTechnique({ user, onLogout }) {
             
                         <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mt-6">
                           {/* Colonne 1 : Liste des demandes */}
-                          <div className="flex flex-col">
+                          <div>
                             <ListeDemandes
                               visites={visites}
                               onSelectClient={handleSelectClient}
@@ -320,7 +320,6 @@ export default function DashboardTechnique({ user, onLogout }) {
                               enCours={dossiersEnCours}
                               termines={dossiersTermines}
                             />
-                            <RecentActivities user={user} onShowHistory={() => setShowHistoryDetail(true)} />
                           </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mt-6">
