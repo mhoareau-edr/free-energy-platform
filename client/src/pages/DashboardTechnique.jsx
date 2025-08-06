@@ -313,32 +313,25 @@ export default function DashboardTechnique({ user, onLogout }) {
 
             <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mt-6">
               {/* Colonne 1 : Liste des demandes */}
-              <div>
-                <RepartitionParTechnicien
-                    onSelectTechnicien={(nom) => {
-                      setFiltreTechnicien(nom);
-                      setShowAllClients(true);
-                    }}
-                  />
-              </div>
+
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
               {/* Colonne 2 : Activités récentes */}
               <div className="flex flex-col">
-                  <RecentActivities user={user} onShowHistory={() => setShowHistoryDetail(true)} />
+                <RecentActivities user={user} onShowHistory={() => setShowHistoryDetail(true)} />
               </div>
               <div>
-                <CamembertStats
-                  nonCommences={dossiersNonCommences}
-                  enCours={dossiersEnCours}
-                  termines={dossiersTermines}
+                <RepartitionParTechnicien
+                  onSelectTechnicien={(nom) => {
+                    setFiltreTechnicien(nom);
+                    setShowAllClients(true);
+                  }}
                 />
-              
               </div>
               <div>
-                  <RendezVousPlanifies onVoirTout={() => setShowPlanningPose(true)} />
-                </div>
+                <RendezVousPlanifies onVoirTout={() => setShowPlanningPose(true)} />
+              </div>
             </div>
           </div>
         )}

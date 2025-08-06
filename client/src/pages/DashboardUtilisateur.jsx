@@ -411,10 +411,11 @@ export default function DashboardUtilisateur({ user, onLogout }) {
                   enCours={dossiersEnCours}
                   termines={dossiersTermines}
                 />
+                <div>
+                  <RendezVousPlanifies onVoirTout={() => setShowPlanningPose(true)} />
+                </div>
               </div>
-              <div>
-                <RendezVousPlanifies onVoirTout={() => setShowPlanningPose(true)} />
-              </div>
+              
             </div>
           </div>
         )}
