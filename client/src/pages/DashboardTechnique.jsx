@@ -322,12 +322,11 @@ export default function DashboardTechnique({ user, onLogout }) {
                   enCours={dossiersEnCours}
                   termines={dossiersTermines}
                 />
+              
               </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mt-6">
               <div>
-                <RendezVousPlanifies onVoirTout={() => setShowPlanningPose(true)} />
-              </div>
+                  <RendezVousPlanifies onVoirTout={() => setShowPlanningPose(true)} />
+                </div>
             </div>
           </div>
         )}
