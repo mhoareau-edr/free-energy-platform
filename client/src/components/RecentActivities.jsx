@@ -51,7 +51,7 @@ export default function RecentActivities({ user, onShowHistory }) {
 
   return (
     <div>
-      <div className="space-y-5 overflow-hidden bg-white rounded-2xl shadow-md p-6 mt-8 dark:bg-[#1d2125]">
+      <div className="space-y-5 overflow-hidden bg-white rounded-2xl shadow-md p-6 dark:bg-[#1d2125]">
         <div className="flex justify-between items-center mb-2">
           <h2 className="section-title ">Activités récentes</h2>
           <button className="px-4 py-2 text-sm text-white bg-primary rounded hover:bg-red-600 transition" onClick={onShowHistory}>
