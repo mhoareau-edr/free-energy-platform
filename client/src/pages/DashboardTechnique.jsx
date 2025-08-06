@@ -307,14 +307,13 @@ export default function DashboardTechnique({ user, onLogout }) {
                               onSelectClient={handleSelectClient}
                               getEtapeStyle={getEtapeStyle}
                               onVoirTous={() => setShowAllClients(true)}
-                            />
-                            
+                            />    
                           </div>
                         </div>
             
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                           {/* Colonne 2 : Activités récentes */}
-                          <div>
+                          <div className="flex flex-col">
                             <RendezVousPlanifies onVoirTout={() => setShowPlanningPose(true)} />
                             <CamembertStats
                               nonCommences={dossiersNonCommences}
