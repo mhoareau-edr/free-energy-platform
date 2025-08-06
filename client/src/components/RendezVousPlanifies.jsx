@@ -24,7 +24,7 @@ export default function RendezVousPlanifies({ onVoirTout }) {
   }, []);
 
   return (
-    <div className="w-full bg-white rounded-2xl shadow-md p-6 mt-8 dark:bg-[#1d2125]">
+    <div className="w-full bg-white rounded-2xl shadow-md p-6 dark:bg-[#1d2125]">
       <div className="flex justify-between items-center mb-4 ">
         <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2 dark:text-white">
           Rendez-vous planifiés
