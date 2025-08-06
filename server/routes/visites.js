@@ -60,7 +60,8 @@ router.get('/planifiees', async (req, res) => {
     where: {
       AND: [
         { date_debut_pose: { not: null } },
-        { date_fin_pose: { not: null } }
+        { date_fin_pose: { not: null } },
+        { date_visite_technique: { not: null } }
       ]
     },
     select: {
@@ -69,7 +70,8 @@ router.get('/planifiees', async (req, res) => {
       nom_interlocuteur: true,
       Commune: true,
       date_debut_pose: true,
-      date_fin_pose: true
+      date_fin_pose: true,
+      date_visite_technique: true
     }
   });
 
