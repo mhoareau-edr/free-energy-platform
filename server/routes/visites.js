@@ -875,8 +875,8 @@ router.put("/:id/documents/move", async (req, res) => {
   const { id } = req.params;
   const { oldPath, newFolder, nom } = req.body;
 
-  const oldAbs = path.join(uploadDir, `visite-${id}`, oldPath);
-  const newAbs = path.join(uploadDir, `visite-${id}`, newFolder);
+  const oldAbs = path.join("/mnt/data", oldPath);
+  const newAbs = path.join("/mnt/data", `uploads/visite-${id}`, newFolder, nom);
 
   try {
     fs.renameSync(oldAbs, newAbs);
@@ -884,10 +884,11 @@ router.put("/:id/documents/move", async (req, res) => {
     await prisma.document.updateMany({
       where: { chemin: oldPath },
       data: {
-        chemin: `uploads/visite-${id}/${newFolder}${nom}`,
+        chemin: `uploads/visite-${id}/${newFolder}/${nom}`,
         path: `/${newFolder}`
       }
     });
+
 
     res.status(200).json({ success: true });
   } catch (err) {
