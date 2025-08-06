@@ -875,20 +875,28 @@ router.put("/:id/documents/move", async (req, res) => {
   const { id } = req.params;
   const { oldPath, newFolder, nom } = req.body;
 
-  const oldAbs = path.join("/mnt/data", oldPath);
-  const newAbs = path.join("/mnt/data", `uploads/visite-${id}`, newFolder, nom);
-
   try {
+    // 🔁 Chemins absolus
+    const oldAbs = path.join("/mnt/data", oldPath);
+    const newAbs = path.join("/mnt/data/uploads", `visite-${id}`, newFolder, nom);
+
+    // 🔐 S'assurer que le dossier cible existe
+    const destinationDir = path.dirname(newAbs);
+    if (!fs.existsSync(destinationDir)) {
+      fs.mkdirSync(destinationDir, { recursive: true });
+    }
+
+    // 🚚 Déplacement du fichier
     fs.renameSync(oldAbs, newAbs);
 
+    // 🔄 Mise à jour en base
     await prisma.document.updateMany({
       where: { chemin: oldPath },
       data: {
-        chemin: `uploads/visite-${id}/${newFolder}/${nom}`,
-        path: `/${newFolder}`
+        chemin: `uploads/visite-${id}/${newFolder}/${nom}`.replace(/\\/g, "/"),
+        path: `/${newFolder}`.replace(/\\/g, "/")
       }
     });
-
 
     res.status(200).json({ success: true });
   } catch (err) {
@@ -896,6 +904,7 @@ router.put("/:id/documents/move", async (req, res) => {
     res.status(500).json({ error: "Déplacement échoué." });
   }
 });
+
 
 router.post("/:id/documents/folder", async (req, res) => {
   const { id } = req.params;
