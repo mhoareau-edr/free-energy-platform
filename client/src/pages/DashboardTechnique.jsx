@@ -49,7 +49,7 @@ export default function DashboardTechnique({ user, onLogout }) {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showFullChat, setShowFullChat] = useState(false);
   const [selectedMiniChatUser, setSelectedMiniChatUser] = useState(null);
-  
+
 
   const API = import.meta.env.VITE_API_URL;
 
@@ -110,7 +110,7 @@ export default function DashboardTechnique({ user, onLogout }) {
     }
     setSelectedClient(v);
   };
-  
+
   const handleVoirTous = () => {
     setShowAllClients(true);
   };
@@ -211,7 +211,7 @@ export default function DashboardTechnique({ user, onLogout }) {
         showMessages={showMessages}
         setShowMessages={setShowMessages}
       />
-      
+
       <main className="dashboard-main">
         {showHistoryDetail ? (
           <HistoriqueDetail user={user} onClose={() => setShowHistoryDetail(false)} />
@@ -286,47 +286,50 @@ export default function DashboardTechnique({ user, onLogout }) {
               )}
             </div>
             <div className="flex justify-between items-center my-6">
-                          <WelcomeBanner user={user} />
-                        </div>
-                        <DashboardStats
-                          total={visites.length}
-                          nonCommences={dossiersNonCommences}
-                          enCours={dossiersEnCours}
-                          termines={dossiersTermines}
-                          onFilterClick={(filtre) => {
-                            setFiltreEtapes(filtre);
-                            setShowAllClients(true);
-                          }}
-                        />
-            
-                        <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mt-6">
-                          {/* Colonne 1 : Liste des demandes */}
-                          <div>
-                            <ListeDemandes
-                              visites={visites}
-                              onSelectClient={handleSelectClient}
-                              getEtapeStyle={getEtapeStyle}
-                              onVoirTous={() => setShowAllClients(true)}
-                            />    
-                          </div>
-                        </div>
-            
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                          {/* Colonne 2 : Activités récentes */}
-                          <div className="flex flex-col">
-                            <RendezVousPlanifies onVoirTout={() => setShowPlanningPose(true)} />
-                            <CamembertStats
-                              nonCommences={dossiersNonCommences}
-                              enCours={dossiersEnCours}
-                              termines={dossiersTermines}
-                            />
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mt-6">
-                          <div>
-                            <RecentActivities user={user} onShowHistory={() => setShowHistoryDetail(true)} />
-                          </div>
-                        </div>
+              <WelcomeBanner user={user} />
+            </div>
+            <DashboardStats
+              total={visites.length}
+              nonCommences={dossiersNonCommences}
+              enCours={dossiersEnCours}
+              termines={dossiersTermines}
+              onFilterClick={(filtre) => {
+                setFiltreEtapes(filtre);
+                setShowAllClients(true);
+              }}
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mt-6">
+              {/* Colonne 1 : Liste des demandes */}
+              <div>
+                <ListeDemandes
+                  visites={visites}
+                  onSelectClient={handleSelectClient}
+                  getEtapeStyle={getEtapeStyle}
+                  onVoirTous={() => setShowAllClients(true)}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+              {/* Colonne 2 : Activités récentes */}
+              <div className="flex flex-col">
+                <RendezVousPlanifies onVoirTout={() => setShowPlanningPose(true)} />
+
+              </div>
+              <div>
+                <CamembertStats
+                  nonCommences={dossiersNonCommences}
+                  enCours={dossiersEnCours}
+                  termines={dossiersTermines}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mt-6">
+              <div>
+                <RecentActivities user={user} onShowHistory={() => setShowHistoryDetail(true)} />
+              </div>
+            </div>
           </div>
         )}
 

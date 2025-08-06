@@ -193,120 +193,120 @@ export default function DashboardUtilisateur({ user, onLogout }) {
   const dateFormatee = new Date().toLocaleDateString("fr-FR");
 
   const demanderVT = async (visite) => {
-  setLoading(true);
+    setLoading(true);
 
-  try {
-    const dateFormatee = new Date().toLocaleDateString("fr-FR");
+    try {
+      const dateFormatee = new Date().toLocaleDateString("fr-FR");
 
-    const payload = {
-      nomSite: client,
-      ...visites,
-      id: visite.id,
-      date_de_la_demande: dateFormatee,
-      puissance_souhaitée: details.puissance_souhaitée,
-      adresse_pose: adresse,
-      code_postal: details.code_postal,
-      Commune: details.Commune,
-      nom_interlocuteur: details.nom_interlocuteur,
-      fonction_interlocuteur: details.fonction_interlocuteur,
-      mail_interlocuteur: details.mail_interlocuteur,
-      tel_interlocuteur: details.tel_interlocuteur,
-      commercial_vt: details.commercial_vt,
-      stockage_text: details.stockage_text,
-      oui_revente: details.oui_revente,
-      non_revente: details.non_revente,
-      oui_maintenance: details.oui_maintenance,
-      non_maintenance: details.non_maintenance,
-      type_abonnement: details.type_abonnement,
-      type_comptant: details.type_comptant,
-      commentaires_technique: details.commentaires_technique
-    };
-
-    const pdfRes = await fetch(`${API}/generate-pdf`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-
-    if (!pdfRes.ok) throw new Error("Erreur lors de la génération du PDF");
-
-    const { pdfPath, bonLivraisonPath, procesVerbalPath } = await pdfRes.json();
-    toast.success("Visite Technique demandée !");
-
-    const res = await fetch(`${API}/visites`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        client,
-        adresse,
-        demandeur: user.name,
-        pdfPath,
-        bonLivraisonPath,
-        procesVerbalPath,
-        details,
-        user: user.name,
+      const payload = {
+        nomSite: client,
+        ...visites,
+        id: visite.id,
+        date_de_la_demande: dateFormatee,
+        puissance_souhaitée: details.puissance_souhaitée,
+        adresse_pose: adresse,
+        code_postal: details.code_postal,
+        Commune: details.Commune,
+        nom_interlocuteur: details.nom_interlocuteur,
+        fonction_interlocuteur: details.fonction_interlocuteur,
+        mail_interlocuteur: details.mail_interlocuteur,
+        tel_interlocuteur: details.tel_interlocuteur,
+        commercial_vt: details.commercial_vt,
+        stockage_text: details.stockage_text,
+        oui_revente: details.oui_revente,
+        non_revente: details.non_revente,
+        oui_maintenance: details.oui_maintenance,
+        non_maintenance: details.non_maintenance,
         type_abonnement: details.type_abonnement,
         type_comptant: details.type_comptant,
-        client_b2b: details.client_b2b,
-        client_b2c: details.client_b2c
-      })
-    });
+        commentaires_technique: details.commentaires_technique
+      };
 
-    if (!res.ok) throw new Error("Erreur lors de la création de la visite");
+      const pdfRes = await fetch(`${API}/generate-pdf`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
 
-    const newVisite = await res.json();
+      if (!pdfRes.ok) throw new Error("Erreur lors de la génération du PDF");
 
-    setClient("");
-    setAdresse("");
-    setDetails({
-      puissance_souhaitée: "",
-      code_postal: "",
-      Commune: "",
-      nom_interlocuteur: "",
-      fonction_interlocuteur: "",
-      mail_interlocuteur: "",
-      tel_interlocuteur: "",
-      commercial_vt: "",
-      stockage_text: "",
-      oui_revente: false,
-      non_revente: false,
-      oui_maintenance: false,
-      non_maintenance: false,
-      type_abonnement: false,
-      type_comptant: false,
-      commentaires_technique: "",
-      client_b2b: false,
-      client_b2c: false
-    });
+      const { pdfPath, bonLivraisonPath, procesVerbalPath } = await pdfRes.json();
+      toast.success("Visite Technique demandée !");
 
-    await fetch(`${API}/notifications`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message: `Visite Technique demandée pour ${visite.nom_interlocuteur || "un client"}.`,
-        type: "system",
-        target: "Technique",
-        senderId: user.id,
-        senderName: user.name,
-      }),
-    });
+      const res = await fetch(`${API}/visites`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          client,
+          adresse,
+          demandeur: user.name,
+          pdfPath,
+          bonLivraisonPath,
+          procesVerbalPath,
+          details,
+          user: user.name,
+          type_abonnement: details.type_abonnement,
+          type_comptant: details.type_comptant,
+          client_b2b: details.client_b2b,
+          client_b2c: details.client_b2c
+        })
+      });
 
-    setShowForm(false);
-    fetchVisites();
-    fetchActivities();
-    setSelectedClient(newVisite);
+      if (!res.ok) throw new Error("Erreur lors de la création de la visite");
 
-  } catch (err) {
-    console.error("Erreur lors de la demande de VT :", err);
-    toast.error("Erreur lors de la demande");
-  } finally {
-    setLoading(false); // ✅ On stoppe le chargement quoi qu’il arrive
-  }
-};
+      const newVisite = await res.json();
+
+      setClient("");
+      setAdresse("");
+      setDetails({
+        puissance_souhaitée: "",
+        code_postal: "",
+        Commune: "",
+        nom_interlocuteur: "",
+        fonction_interlocuteur: "",
+        mail_interlocuteur: "",
+        tel_interlocuteur: "",
+        commercial_vt: "",
+        stockage_text: "",
+        oui_revente: false,
+        non_revente: false,
+        oui_maintenance: false,
+        non_maintenance: false,
+        type_abonnement: false,
+        type_comptant: false,
+        commentaires_technique: "",
+        client_b2b: false,
+        client_b2c: false
+      });
+
+      await fetch(`${API}/notifications`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: `Visite Technique demandée pour ${visite.nom_interlocuteur || "un client"}.`,
+          type: "system",
+          target: "Technique",
+          senderId: user.id,
+          senderName: user.name,
+        }),
+      });
+
+      setShowForm(false);
+      fetchVisites();
+      fetchActivities();
+      setSelectedClient(newVisite);
+
+    } catch (err) {
+      console.error("Erreur lors de la demande de VT :", err);
+      toast.error("Erreur lors de la demande");
+    } finally {
+      setLoading(false); // ✅ On stoppe le chargement quoi qu’il arrive
+    }
+  };
 
 
   return (
-    
+
     <div className="dashboard-container">
       <PatchNotesModal />
       <Header
@@ -396,7 +396,7 @@ export default function DashboardUtilisateur({ user, onLogout }) {
                   getEtapeStyle={getEtapeStyle}
                   onVoirTous={() => setShowAllClients(true)}
                 />
-                
+
               </div>
             </div>
 
@@ -404,6 +404,8 @@ export default function DashboardUtilisateur({ user, onLogout }) {
               {/* Colonne 2 : Activités récentes */}
               <div>
                 <RendezVousPlanifies onVoirTout={() => setShowPlanningPose(true)} />
+              </div>
+              <div>
                 <CamembertStats
                   nonCommences={dossiersNonCommences}
                   enCours={dossiersEnCours}
