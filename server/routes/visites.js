@@ -818,7 +818,6 @@ router.put('/:id/planifier-vt', async (req, res) => {
       where: { id: parseInt(id) },
       data: {
         date_visite_technique: new Date(date_visite_technique),
-        updatedBy: user || "Système"
       }
     });
 
