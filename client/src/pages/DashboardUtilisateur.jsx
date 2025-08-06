@@ -387,7 +387,7 @@ export default function DashboardUtilisateur({ user, onLogout }) {
               }}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mt-6">
               {/* Colonne 1 : Liste des demandes */}
               <div className="flex flex-col">
                 <ListeDemandes
@@ -396,11 +396,14 @@ export default function DashboardUtilisateur({ user, onLogout }) {
                   getEtapeStyle={getEtapeStyle}
                   onVoirTous={() => setShowAllClients(true)}
                 />
-                <RendezVousPlanifies onVoirTout={() => setShowPlanningPose(true)} />
+                
               </div>
+            </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
               {/* Colonne 2 : Activités récentes */}
               <div>
+                <RendezVousPlanifies onVoirTout={() => setShowPlanningPose(true)} />
                 <CamembertStats
                   nonCommences={dossiersNonCommences}
                   enCours={dossiersEnCours}
@@ -409,9 +412,13 @@ export default function DashboardUtilisateur({ user, onLogout }) {
                 <RecentActivities user={user} onShowHistory={() => setShowHistoryDetail(true)} />
               </div>
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mt-6">
+              <div>
+                <RecentActivities user={user} onShowHistory={() => setShowHistoryDetail(true)} />
+              </div>
+            </div>
           </div>
         )}
-
       </main>
 
       {/* FORMULAIRE MODAL + PARAMETRES POPUP INCHANGEES */}
