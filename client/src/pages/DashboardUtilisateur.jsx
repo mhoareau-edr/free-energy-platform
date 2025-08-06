@@ -403,7 +403,7 @@ export default function DashboardUtilisateur({ user, onLogout }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
               {/* Colonne 2 : Activités récentes */}
               <div>
-                <RendezVousPlanifies onVoirTout={() => setShowPlanningPose(true)} />
+                <RecentActivities user={user} onShowHistory={() => setShowHistoryDetail(true)} />
               </div>
               <div>
                 <CamembertStats
@@ -415,7 +415,7 @@ export default function DashboardUtilisateur({ user, onLogout }) {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mt-6">
               <div>
-                <RecentActivities user={user} onShowHistory={() => setShowHistoryDetail(true)} />
+                <RendezVousPlanifies onVoirTout={() => setShowPlanningPose(true)} />
               </div>
             </div>
           </div>
