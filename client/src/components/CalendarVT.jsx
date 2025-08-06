@@ -39,6 +39,12 @@ export default function CalendarVT({ visite, user }) {
   const handleConfirm = async () => {
     const date = new Date(selectedDate);
 
+    console.log("📦 Payload envoyé :", {
+        date_visite_technique: date.toISOString(),
+        user: user.name,
+        visiteId: visite.id,
+    });
+
     await axios.put(`${API}/visites/${visite.id}/planifier-vt`, {
       date_visite_technique: date.toISOString(),
       user: user.name
