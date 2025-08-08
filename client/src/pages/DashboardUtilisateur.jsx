@@ -351,7 +351,6 @@ export default function DashboardUtilisateur({ user, onLogout }) {
             visites={visites}
             onSelectClient={handleSelectClient}
             onClose={() => setShowAllClients(false)}
-            onOpenClient={openClientFromAnywhere}
             getEtapeStyle={getEtapeStyle}
             etapesFiltrees={filtreEtapes}
             onEtapeFilterChange={(etape) => {

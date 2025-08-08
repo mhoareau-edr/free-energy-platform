@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useMemo } from "react";
 import { FaSearch } from "react-icons/fa";
 import { FaSortAlphaDown, FaSortAlphaUp } from "react-icons/fa";
 
-export default function Clients({ visites, onSelectClient, getEtapeStyle, onClose, etapesFiltrees = [], onEtapeFilterChange, filtreTechnicien, currentUser, onOpenClient }) {
+export default function Clients({ visites, onSelectClient, getEtapeStyle, onClose, etapesFiltrees = [], onEtapeFilterChange, filtreTechnicien, currentUser }) {
 
   const [search, setSearch] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
@@ -36,17 +36,6 @@ export default function Clients({ visites, onSelectClient, getEtapeStyle, onClos
         : { key, direction: "asc" }
     );
   };
-
-  const openClientFromAnywhere = (v) => {
-    setSelectedClient(v);
-    setSearch?.("");
-    setShowSuggestions?.(false);
-    setShowAllClients(false);
-    setShowPlanningPose(false);
-    setShowHistoryDetail(false);
-    setShowMessages(false);
-  };
-
 
   const sorted = useMemo(() => {
     const sortedData = [...visites]
