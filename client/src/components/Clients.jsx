@@ -172,6 +172,7 @@ export default function Clients({ visites, onSelectClient, getEtapeStyle, onClos
                   <option value="BtoC">BtoC</option>
                 </select>
               </th>
+              <th className="pb-3 dark:text-white">Contrat</th>
 
             </tr>
           </thead>
@@ -220,6 +221,15 @@ export default function Clients({ visites, onSelectClient, getEtapeStyle, onClos
                     <span className="text-gray-400 italic">Non défini</span>
                   )}
                 </td>
+                <td className="py-4 text-sm">
+                  { (v.type_abonnement ?? v.details?.type_abonnement) ? (
+                    <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-semibold">Abonnement</span>
+                  ) : (v.type_comptant ?? v.details?.type_comptant) ? (
+                    <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs font-semibold">Comptant</span>
+                  ) : (
+                    <span className="text-gray-400 italic">Non défini</span>
+                  )}
+                </td>
                 <td className="py-4 font-medium text-gray-900">
                   {currentUser?.role === "Technique" && v.locked && v.technicien_vt !== currentUser?.name && (
                     <span title="Verrouillé">🔒</span>
@@ -230,7 +240,7 @@ export default function Clients({ visites, onSelectClient, getEtapeStyle, onClos
             ))}
             {sorted.length === 0 && (
               <tr>
-                <td colSpan="6" className="py-4 text-center text-sm text-gray-400 italic">
+                <td colSpan="8" className="py-4 text-center text-sm text-gray-400 italic">
                   Aucun client ne correspond à votre recherche.
                 </td>
               </tr>
