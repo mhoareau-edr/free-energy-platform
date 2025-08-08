@@ -231,6 +231,7 @@ export default function DashboardTechnique({ user, onLogout }) {
             onSelectClient={handleSelectClient}
             getEtapeStyle={getEtapeStyle}
             onClose={() => setShowAllClients(false)}
+            onOpenClient={openClientFromAnywhere}
             etapesFiltrees={filtreEtapes}
             onEtapeFilterChange={(etape) => {
               if (etape === "") {
